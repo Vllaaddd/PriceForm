@@ -25,7 +25,7 @@ export default function Home(){
     }, [])
 
     return(
-        <div className="min-h-screen bg-gray-100 py-10 px-6">
+        <div className="min-h-screen bg-gray-200 py-10 px-6">
             <div className="max-w-5xl mx-auto">
                 
                 <h1 className="text-3xl font-bold text-center mb-10 text-gray-800">
