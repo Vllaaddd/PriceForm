@@ -6,41 +6,9 @@ import { Calculation } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type Material = {
-  name: string;
-  width: number[];
-  thickness: number[];
-  color: string[];
-  otherProperties: string[];
-  id: number;
-};
+export default function Home() {
 
-type Skillet = {
-  format: number[];
-  knife: string[];
-  density: number[];
-};
-
-type Box = {
-  type: string[];
-  color: string[];
-  print: string[];
-  execution: string[];
-};
-
-type Delivery = {
-  type: string[];
-};
-
-type HomeProps = {
-  materials?: Material[];
-  skillet?: Skillet;
-  box?: Box;
-  delivery?: Delivery;
-};
-
-export default function Home({
-  materials = [
+  const materials = [
     {
       name: "Alu",
       width: [288, 290, 294, 295, 298, 300, 327, 330],
@@ -65,19 +33,24 @@ export default function Home({
       otherProperties: ['Factor 1', 'Factor 2', 'Factor 3'],
       id: 3,
     },
-  ], skillet = {
+  ]
+  
+  const skillet = {
     format: [39, 45, 50, 52],
     knife: ['No knife', 'Paper knife', 'Straight plastic knife', 'V-type plastic knife', 'U-type plastic knife'],
     density: [275, 350, 375, 400]
-  }, box = {
+  }
+  
+  const box = {
     type: ['With cover', 'Without cover'],
     color: ['Коричнева', 'Біла'],
     print: ['Printed', 'Not printer', 'Printed and varnished'],
     execution: ['With perforation', 'Without perforation']
-  }, delivery = {
+  }
+  
+  const delivery = {
     type: ['EXW', 'FCA', 'DAP', 'DDP'],
   }
-}: HomeProps) {
 
   const searchParams = useSearchParams()
   const from = searchParams.get("from")
