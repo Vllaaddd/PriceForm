@@ -6,6 +6,39 @@ import { Calculation } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+type Material = {
+  name: string;
+  width: number[];
+  thickness: number[];
+  color: string[];
+  otherProperties: string[];
+  id: number;
+};
+
+type Skillet = {
+  format: number[];
+  knife: string[];
+  density: number[];
+};
+
+type Box = {
+  type: string[];
+  color: string[];
+  print: string[];
+  execution: string[];
+};
+
+type Delivery = {
+  type: string[];
+};
+
+type HomeProps = {
+  materials?: Material[];
+  skillet?: Skillet;
+  box?: Box;
+  delivery?: Delivery;
+};
+
 export default function Home({
   materials = [
     {
@@ -44,7 +77,7 @@ export default function Home({
   }, delivery = {
     type: ['EXW', 'FCA', 'DAP', 'DDP'],
   }
-}) {
+}: HomeProps) {
 
   const searchParams = useSearchParams()
   const from = searchParams.get("from")
