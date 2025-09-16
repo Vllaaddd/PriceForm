@@ -1,8 +1,8 @@
 import { prisma } from "@/prisma/prisma-client";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params; // без await
+export async function GET(req: NextRequest, context: any) {
+  const { id } = context.params;
 
   try {
     const calculation = await prisma.calculation.findUnique({
