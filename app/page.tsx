@@ -1,0 +1,83 @@
+'use client'
+
+import { MaterialChoice } from "@/components/material-choice";
+import { Api } from "@/services/api-client";
+import { Calculation } from "@prisma/client";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+export default function Home({
+  materials = [
+    {
+      name: "Alu",
+      width: [288, 290, 294, 295, 298, 300, 327, 330],
+      thickness: [8, 9, 10, 10.3, 10.5, 10.7, 11, 11.2, 11.3, 11.5, 12, 12.3, 12.5, 13, 13.2, 13.3, 13.5, 14, 14.5, 15, 15.5, 17, 17.5, 18, 20],
+      color: ['Silver'],
+      otherProperties: ['Embossed', '-'],
+      id: 1,
+    },
+    {
+      name: "Pe",
+      width: [290, 295, 300],
+      thickness: [8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13.5, 14, 14.5],
+      color: ['Transparent'],
+      otherProperties: ['SuperStretch', 'Easy Tear'],
+      id: 2,
+    },
+    {
+      name: "Pvc",
+      width: [290, 295, 300, 350],
+      thickness: [6, 6.5, 7, 7.5, 8, 8.5, 9, 10, 10.2],
+      color: ['Transparent', 'Champagne', 'Yellow'],
+      otherProperties: ['Factor 1', 'Factor 2', 'Factor 3'],
+      id: 3,
+    },
+  ], skillet = {
+    format: [39, 45, 50, 52],
+    knife: ['No knife', 'Paper knife', 'Straight plastic knife', 'V-type plastic knife', 'U-type plastic knife'],
+    density: [275, 350, 375, 400]
+  }, box = {
+    type: ['With cover', 'Without cover'],
+    color: ['Коричнева', 'Біла'],
+    print: ['Printed', 'Not printer', 'Printed and varnished'],
+    execution: ['With perforation', 'Without perforation']
+  }, delivery = {
+    type: ['EXW', 'FCA', 'DAP', 'DDP'],
+  }
+}) {
+
+  const searchParams = useSearchParams()
+  const from = searchParams.get("from")
+
+  const [initialCalculation, setInitialCalculation] = useState<Calculation | undefined>(undefined)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (from) {
+        try {
+          const calculation = await Api.calculations.getOneCalculation(from);
+          setInitialCalculation(calculation);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+
+    fetchData();
+  }, [from])
+
+  return (
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gray-200 p-4">
+        <div className="w-full max-w-3xl">
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-t-2xl shadow-md">
+            Price Form
+          </h1>
+          <div className="bg-white rounded-b-2xl shadow-lg p-6">
+            <MaterialChoice materials={materials} skillet={skillet} box={box} delivery={delivery} initialCalculation={initialCalculation} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

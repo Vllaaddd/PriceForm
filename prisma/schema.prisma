@@ -1,0 +1,40 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+
+model Calculation{
+    id Int @id @default(autoincrement())
+
+    title String
+    material String
+    materialWidth Int
+    materialThickness Int
+    materialLength Int
+    materialColor String
+    otherProperties String
+    skilletFormat Int
+    skilletKnife String
+    skilletDensity Int
+    boxType String
+    boxColor String
+    boxPrint String
+    boxExecution String
+    rollsPerCarton Int
+    antislidePaperSheets String
+    cartonPerPallet Int
+    totalOrderInRolls Int
+    totalOrderInPallets Int
+    period String
+    deliveryConditions String
+    deliveryAddress String
+    referenceArticle String
+    remarks String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
