@@ -115,7 +115,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
         onSubmit={handleSubmit}
       >
         <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          Конфігурація замовлення
+          Конфігурація розрахунку
         </h2>
 
         <div className="grid gap-4">
