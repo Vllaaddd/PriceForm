@@ -1,6 +1,7 @@
 'use client';
 
 import HomeClient from "@/components/home-client";
+import { Suspense } from "react";
 
 export default function Page() {
   const materials = [
@@ -48,8 +49,10 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-200 p-4">
-      <HomeClient materials={materials} skillet={skillet} box={box} delivery={delivery} />
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-200 p-4">
+        <HomeClient materials={materials} skillet={skillet} box={box} delivery={delivery} />
+      </div>
+    </Suspense>
   )
 }
