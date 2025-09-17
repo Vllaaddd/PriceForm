@@ -112,7 +112,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
   useEffect(() => {
     if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
       setForm(prev => ({ ...prev, deliveryAddress: "Sinngen" }))
-    } else if (form.deliveryConditions === "DAP" || form.deliveryConditions === "DDP") {
+    }else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
       setForm(prev => ({ ...prev, deliveryAddress: "" }))
     }
   }, [form.deliveryConditions])
@@ -328,7 +328,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             type="string"
             value={form.deliveryAddress || ""}
             onChange={(e) => handleChange("deliveryAddress", e.target.value)}
-            disabled={form.deliveryConditions === "DAP" || form.deliveryConditions === "DDP"}
+            disabled={form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA"}
           />
 
           {/* Reference article */}

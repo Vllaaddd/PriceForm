@@ -48,7 +48,7 @@ export default function Home() {
               <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
               <Info label="Skillet knife" value={calculation.skilletKnife} />
-              <Info label="Skillet density" value={`${calculation.skilletDensity} г/м²`} />
+              <Info label="Skillet density" value={`${calculation.skilletDensity} g/m²`} />
               <Info label="Box type" value={calculation.boxType} />
               <Info label="Box color" value={calculation.boxColor} />
               <Info label="Box print" value={calculation.boxPrint} />
