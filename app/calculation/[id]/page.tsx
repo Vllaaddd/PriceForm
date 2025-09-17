@@ -39,29 +39,34 @@ export default function Home() {
             </h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Info label="Матеріал" value={calculation.material} />
-              <Info label="Колір матеріалу" value={calculation.materialColor} />
-              <Info label="Ширина" value={`${calculation.materialWidth} мм`} />
-              <Info label="Довжина" value={`${calculation.materialLength} мм`} />
-              <Info label="Товщина" value={`${calculation.materialThickness} мм`} />
-              <Info label="Інші властивості" value={calculation.otherProperties} />
+              <Info label="Creator" value={calculation.creator} />
+              <Info label="Material" value={calculation.material} />
+              <Info label="Material color" value={calculation.materialColor} />
+              <Info label="Width" value={`${calculation.materialWidth} мм`} />
+              <Info label="Length" value={`${calculation.materialLength} мм`} />
+              <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+              <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
               <Info label="Skillet knife" value={calculation.skilletKnife} />
               <Info label="Skillet density" value={`${calculation.skilletDensity} г/м²`} />
-              <Info label="Тип коробки" value={calculation.boxType} />
-              <Info label="Колір коробки" value={calculation.boxColor} />
-              <Info label="Друк коробки" value={calculation.boxPrint} />
-              <Info label="Execution коробки" value={calculation.boxExecution} />
+              <Info label="Box type" value={calculation.boxType} />
+              <Info label="Box color" value={calculation.boxColor} />
+              <Info label="Box print" value={calculation.boxPrint} />
+              <Info label="Box execution" value={calculation.boxExecution} />
               <Info label="Rolls per carton" value={calculation.rollsPerCarton} />
               <Info label="Antislide paper sheets" value={calculation.antislidePaperSheets} />
               <Info label="Carton per pallet" value={calculation.cartonPerPallet} />
               <Info label="Total order in rolls" value={calculation.totalOrderInRolls} />
               <Info label="Total order in pallets" value={calculation.totalOrderInPallets} />
-              <Info label="Період" value={calculation.period} />
-              <Info label="Умови доставки" value={calculation.deliveryConditions} />
-              <Info label="Адреса доставки" value={calculation.deliveryAddress} />
-              <Info label="Reference article" value={calculation.referenceArticle} />
-              <Info label="Примітки" value={calculation.remarks} />
+              <Info label="Period" value={calculation.period} />
+              <Info label="Delivery conditions" value={calculation.deliveryConditions} />
+              <Info label="Delivery address" value={calculation.deliveryAddress} />
+              { calculation.referenceArticle && (
+                <Info label="Reference article" value={calculation.referenceArticle} />
+              )}
+              { calculation.remarks && ( 
+                <Info label="Remarks" value={calculation.remarks} />
+              )}
             </div>
 
             <div className="flex justify-center gap-6 mt-8">
@@ -69,18 +74,18 @@ export default function Home() {
                     href={`/?from=${id}`}
                     className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow cursor-pointer"
                 >
-                    Створити на основі цього розрахунку
+                    Create based on this calculation
                 </Link>
                 <button
                     className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow cursor-pointer"
                     onClick={() => setIsModalOpen(true)}
                 >
-                    Вислати розрахунок на Email
+                    Send to email
                 </button>
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-500">Завантаження...</p>
+          <p className="text-center text-gray-500">Loading...</p>
         )}
       </div>
 

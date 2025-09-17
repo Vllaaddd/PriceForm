@@ -34,12 +34,12 @@ export const EmailModal: React.FC<EmailModalProps> = ({ isOpen, onClose, onSend 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-4">Вислати розрахунок на Email</h2>
+        <h2 className="text-lg font-semibold mb-4">Send to Email</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
-            placeholder="Введіть email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -54,14 +54,14 @@ export const EmailModal: React.FC<EmailModalProps> = ({ isOpen, onClose, onSend 
               onClick={onClose}
               className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 cursor-pointer"
             >
-              Скасувати
+              Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
             >
-              {loading ? "Відправка..." : "Відправити"}
+              {loading ? "Sending..." : "Send"}
             </button>
           </div>
         </form>

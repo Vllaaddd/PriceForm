@@ -39,7 +39,7 @@ export default function Page() {
 
   const box = {
     type: ['With cover', 'Without cover'],
-    color: ['Коричнева', 'Біла'],
+    color: ['Brown', 'White'],
     print: ['Printed', 'Not printer', 'Printed and varnished'],
     execution: ['With perforation', 'Without perforation'],
   };

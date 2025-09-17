@@ -5,9 +5,11 @@ interface InputFieldProps{
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     value: string | number;
     type: string;
+    required?: boolean;
+    disabled?: boolean;
 }
 
-export const InputField: FC<InputFieldProps> = ({ label, onChange, value, type }) => {
+export const InputField: FC<InputFieldProps> = ({ label, onChange, value, type, required = true, disabled = false }) => {
     return (
     <div className="flex flex-col gap-1">
       <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -15,8 +17,13 @@ export const InputField: FC<InputFieldProps> = ({ label, onChange, value, type }
         type={type}
         value={value}
         onChange={onChange}
-        required={true}
-        className="rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required={required}
+        disabled={disabled}
+        className={`rounded-lg border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          disabled
+            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+            : "bg-white border-gray-300"
+        }`}
       />
     </div>
   );

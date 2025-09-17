@@ -10,6 +10,7 @@ datasource db {
 model Calculation{
     id Int @id @default(autoincrement())
 
+    creator String
     title String
     material String
     materialWidth Int
@@ -32,8 +33,8 @@ model Calculation{
     period String
     deliveryConditions String
     deliveryAddress String
-    referenceArticle String
-    remarks String
+    referenceArticle String?
+    remarks String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -8,6 +8,7 @@ import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
 
 type CalculationForm = {
+  creator?: string
   title?: string
   material?: string
   materialWidth?: number
@@ -30,8 +31,8 @@ type CalculationForm = {
   period?: string
   deliveryConditions?: string
   deliveryAddress?: string
-  referenceArticle?: string
-  remarks?: string
+  referenceArticle?: string | null
+  remarks?: string | null
 }
 
 interface Material {
@@ -108,6 +109,22 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
     }
   }, [form.totalOrderInRolls, form.cartonPerPallet, form.rollsPerCarton])
 
+  useEffect(() => {
+    if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
+      setForm(prev => ({ ...prev, deliveryAddress: "Sinngen" }))
+    } else if (form.deliveryConditions === "DAP" || form.deliveryConditions === "DDP") {
+      setForm(prev => ({ ...prev, deliveryAddress: "" }))
+    }
+  }, [form.deliveryConditions])
+
+  useEffect(() => {
+    if (form.material === "Alu") {
+      setForm(prev => ({ ...prev, materialColor: "Silver" }))
+    } else if (form.material === "Pe") {
+      setForm(prev => ({ ...prev, materialColor: "Transparent" }))
+    }
+  }, [form.material])
+
   return (
     <>
       <form
@@ -115,16 +132,19 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
         onSubmit={handleSubmit}
       >
         <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          Конфігурація розрахунку
+          Calculation configuration
         </h2>
 
         <div className="grid gap-4">
           {/* Назва */}
-          <InputField label="Назва" type="string" value={form.title || ""} onChange={(e) => handleChange("title", e.target.value)} />
+          <InputField label="Title" type="string" value={form.title || ""} onChange={(e) => handleChange("title", e.target.value)} />
+
+          {/* Creator */}
+          <InputField label="Creator (your email)" type="string" value={form.creator || ""} onChange={(e) => handleChange("creator", e.target.value)} />
 
           {/* Матеріал */}
-          <SelectField label="Матеріал" value={form.material || ""} onChange={(e) => handleChange("material", e.target.value)}>
-            <option value="">-- виберіть матеріал --</option>
+          <SelectField label="Material" value={form.material || ""} onChange={(e) => handleChange("material", e.target.value)}>
+            <option value="">-- choose material --</option>
             {materials.map((m) => (
               <option key={m.id} value={m.name}>
                 {m.name}
@@ -134,12 +154,12 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Ширина */}
           <SelectField
-            label="Ширина (mm)"
+            label="Width (mm)"
             value={form.materialWidth || ""}
             onChange={(e) => handleChange("materialWidth", Number(e.target.value))}
             disabled={!selectedMaterial}
           >
-            <option value="">-- виберіть ширину --</option>
+            <option value="">-- choose width --</option>
             {selectedMaterial?.width.map((w, i) => (
               <option key={i} value={w}>
                 {w}
@@ -149,12 +169,12 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Товщина */}
           <SelectField
-            label="Товщина (my)"
+            label="Thickness (my)"
             value={form.materialThickness || ""}
             onChange={(e) => handleChange("materialThickness", Number(e.target.value))}
             disabled={!selectedMaterial}
           >
-            <option value="">-- виберіть товщину --</option>
+            <option value="">-- choose thickness --</option>
             {selectedMaterial?.thickness.map((t, i) => (
               <option key={i} value={t}>
                 {t}
@@ -163,16 +183,16 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Довжина */}
-          <InputField label="Довжина (m)" type="number" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
+          <InputField label="Length (m)" type="number" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
 
           {/* Колір */}
           <SelectField
-            label="Колір"
+            label="Color"
             value={form.materialColor || ""}
             onChange={(e) => handleChange("materialColor", e.target.value)}
             disabled={!selectedMaterial}
           >
-            <option value="">-- виберіть колір --</option>
+            <option value="">-- choose color --</option>
             {selectedMaterial?.color.map((c, i) => (
               <option key={i} value={c}>
                 {c}
@@ -182,12 +202,12 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Інші властивості */}
           <SelectField
-            label="Інші властивості"
+            label="Other properties"
             value={form.otherProperties || ""}
             onChange={(e) => handleChange("otherProperties", e.target.value)}
             disabled={!selectedMaterial}
           >
-            <option value="">-- виберіть інші властивості --</option>
+            <option value="">-- choose other properties --</option>
             {selectedMaterial?.otherProperties.map((o, i) => (
               <option key={i} value={o}>
                 {o}
@@ -197,7 +217,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Skillet */}
           <SelectField label="Skillet format" value={form.skilletFormat || ""} onChange={(e) => handleChange("skilletFormat", Number(e.target.value))}>
-            <option value="">-- виберіть skillet format --</option>
+            <option value="">-- choose skillet format --</option>
             {skillet.format.map((f, i) => (
               <option key={i} value={f}>
                 {f}
@@ -207,7 +227,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Skillet knife */}
           <SelectField label="Skillet knife" value={form.skilletKnife || ""} onChange={(e) => handleChange("skilletKnife", e.target.value)}>
-            <option value="">-- виберіть skillet knife --</option>
+            <option value="">-- choose skillet knife --</option>
             {skillet.knife.map((k, i) => (
               <option key={i} value={k}>
                 {k}
@@ -217,7 +237,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Skillet density */}
           <SelectField label="Skillet density" value={form.skilletDensity || ""} onChange={(e) => handleChange("skilletDensity", Number(e.target.value))}>
-            <option value="">-- виберіть skillet density --</option>
+            <option value="">-- choose skillet density --</option>
             {skillet.density.map((d, i) => (
               <option key={i} value={d}>
                 {d}
@@ -226,8 +246,8 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Box */}
-          <SelectField label="Тип коробки" value={form.boxType || ""} onChange={(e) => handleChange("boxType", e.target.value)}>
-            <option value="">-- виберіть тип коробки --</option>
+          <SelectField label="Box type" value={form.boxType || ""} onChange={(e) => handleChange("boxType", e.target.value)}>
+            <option value="">-- choose box type --</option>
             {box.type.map((t, i) => (
               <option key={i} value={t}>
                 {t}
@@ -236,8 +256,8 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Колір коробки */}
-          <SelectField label="Колір коробки" value={form.boxColor || ""} onChange={(e) => handleChange("boxColor", e.target.value)}>
-            <option value="">-- виберіть колір коробки --</option>
+          <SelectField label="Box color" value={form.boxColor || ""} onChange={(e) => handleChange("boxColor", e.target.value)}>
+            <option value="">-- choose box color --</option>
             {box.color.map((c, i) => (
               <option key={i} value={c}>
                 {c}
@@ -246,8 +266,8 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Друк коробки */}
-          <SelectField label="Друк коробки" value={form.boxPrint || ""} onChange={(e) => handleChange("boxPrint", e.target.value)}>
-            <option value="">-- виберіть друк коробки --</option>
+          <SelectField label="Box print" value={form.boxPrint || ""} onChange={(e) => handleChange("boxPrint", e.target.value)}>
+            <option value="">-- choose box print --</option>
             {box.print.map((p, i) => (
               <option key={i} value={p}>
                 {p}
@@ -256,8 +276,8 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Execution коробки */}
-          <SelectField label="Execution коробки" value={form.boxExecution || ""} onChange={(e) => handleChange("boxExecution", e.target.value)}>
-            <option value="">-- виберіть execution коробки --</option>
+          <SelectField label="Box execution" value={form.boxExecution || ""} onChange={(e) => handleChange("boxExecution", e.target.value)}>
+            <option value="">-- choose box execution --</option>
             {box.execution.map((ex, i) => (
               <option key={i} value={ex}>
                 {ex}
@@ -270,7 +290,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Antislide paper sheets */}
           <SelectField label="Antislide paper sheets" value={form.antislidePaperSheets || ""} onChange={(e) => handleChange("antislidePaperSheets", e.target.value)}>
-            <option value="">-- виберіть --</option>
+            <option value="">-- choose antislide paper sheets --</option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
           </SelectField>
@@ -290,11 +310,11 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           )}
 
           {/* Період */}
-          <InputField label="Період" type="string" value={form.period || ""} onChange={(e) => handleChange("period", e.target.value)} />
+          <InputField label="Period" type="string" value={form.period || ""} onChange={(e) => handleChange("period", e.target.value)} />
 
           {/* Умови доставки */}
-          <SelectField label="Умови доставки" value={form.deliveryConditions || ""} onChange={(e) => handleChange("deliveryConditions", e.target.value)}>
-            <option value="">-- виберіть умови доставки --</option>
+          <SelectField label="Delivery conditions" value={form.deliveryConditions || ""} onChange={(e) => handleChange("deliveryConditions", e.target.value)}>
+            <option value="">-- choose delivery conditions --</option>
             {delivery.type.map((d, i) => (
               <option key={i} value={d}>
                 {d}
@@ -303,25 +323,31 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Адреса доставки */}
-          <InputField label="Адреса доставки" type="string" value={form.deliveryAddress || ""} onChange={(e) => handleChange("deliveryAddress", e.target.value)} />
+          <InputField
+            label="Delivery address"
+            type="string"
+            value={form.deliveryAddress || ""}
+            onChange={(e) => handleChange("deliveryAddress", e.target.value)}
+            disabled={form.deliveryConditions === "DAP" || form.deliveryConditions === "DDP"}
+          />
 
           {/* Reference article */}
-          <InputField label="Reference article" type="string" value={form.referenceArticle || ""} onChange={(e) => handleChange("referenceArticle", e.target.value)} />
+          <InputField label="Reference article" type="string" value={form.referenceArticle || ""} onChange={(e) => handleChange("referenceArticle", e.target.value)} required={false} />
 
           {/* Remarks */}
-          <InputField label="Remarks" type="string" value={form.remarks || ""} onChange={(e) => handleChange("remarks", e.target.value)} />
+          <InputField label="Remarks" type="string" value={form.remarks || ""} onChange={(e) => handleChange("remarks", e.target.value)} required={false} />
         </div>
 
         <div className="flex justify-center gap-5">
             <button type="submit" className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
-              Створити розрахунок
+              Create calculation
             </button>
             <button 
               type="submit" 
               className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
               onClick={handleSubmitAndEmail}
             >
-              Створити розрахунок і відправити на email
+              Create calculation and send to email
             </button>
         </div>
       </form>
