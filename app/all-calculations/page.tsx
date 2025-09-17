@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 export default function Home(){
 
     const [calculations, setCalculations] = useState<Calculation[]>([])
-    const [viewVariant, setViewVariant] = useState<'grid' | 'table'>(localStorage.getItem('viewVariant') === 'table' ? 'table' : 'grid')
+    const [viewVariant, setViewVariant] = useState<'grid' | 'table'>('grid')
 
     useEffect(() => {
 
@@ -24,17 +24,6 @@ export default function Home(){
         fetchCalculations()
         
     }, [])
-
-    useEffect(() => {
-        const savedView = localStorage.getItem('viewVariant')
-        if (savedView === 'grid' || savedView === 'table') {
-            setViewVariant(savedView)
-        }
-    }, [])
-
-    useEffect(() => {
-        localStorage.setItem('viewVariant', viewVariant)
-    }, [viewVariant])
 
     return(
         <div className="min-h-screen bg-gray-200 py-10 px-6">
@@ -79,30 +68,26 @@ export default function Home(){
                                     <th className="p-3 text-left">Box type</th>
                                     <th className="p-3 text-left">Total rolls</th>
                                     <th className="p-3 text-left">Period</th>
+                                    <th className="p-3 text-left">More info</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {calculations.map((calculation) => (
-                                    <Link
-                                        key={calculation.id}
-                                        href={`/calculation/${calculation.id}`}
-                                        className="contents"
-                                    >
-                                        <tr className="border-t hover:bg-gray-50 cursor-pointer transition">
-                                            <td className="p-3 font-medium">
-                                                {calculation.title}
-                                            </td>
-                                            <td className="p-3">{calculation.material}</td>
-                                            <td className="p-3">
-                                                {calculation.materialWidth} × {calculation.materialLength} ×{" "}
-                                                {calculation.materialThickness} mm
-                                            </td>
-                                            <td className="p-3">{calculation.materialColor}</td>
-                                            <td className="p-3">{calculation.boxType}</td>
-                                            <td className="p-3">{calculation.totalOrderInRolls}</td>
-                                            <td className="p-3">{calculation.period}</td>
-                                        </tr>
-                                    </Link>
+                                    <tr className="border-t hover:bg-gray-50 transition">
+                                        <td className="p-3 font-medium">
+                                            {calculation.title}
+                                        </td>
+                                        <td className="p-3">{calculation.material}</td>
+                                        <td className="p-3">
+                                            {calculation.materialWidth} × {calculation.materialLength} ×{" "}
+                                            {calculation.materialThickness} mm
+                                        </td>
+                                        <td className="p-3">{calculation.materialColor}</td>
+                                        <td className="p-3">{calculation.boxType}</td>
+                                        <td className="p-3">{calculation.totalOrderInRolls}</td>
+                                        <td className="p-3">{calculation.period}</td>
+                                        <td className="p-3 underline font-bold"><Link href={`/calculation/${calculation.id}`}>See more</Link></td>
+                                    </tr>
                                 ))}
                             </tbody>
                         </table>
