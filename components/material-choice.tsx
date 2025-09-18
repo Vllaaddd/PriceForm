@@ -76,7 +76,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
   const selectedMaterial = materials.find(m => m.name === form.material)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
-  const email = 'vladikhoncharuk@gmail.com'
+  const email = 'andriy.goncharuk82@gmail.com'
 
   const handleChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
