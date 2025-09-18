@@ -8,6 +8,7 @@ import { Calculation } from "@prisma/client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
+import { toast, ToastContainer } from "react-toastify"
 
 export default function Home() {
   const pathname = usePathname()
@@ -92,8 +93,18 @@ export default function Home() {
       <EmailModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSend={(email) => sendEmail(email, calculation)}
+        onSend={async (email) => {
+          try {
+            await sendEmail(email, calculation)
+            toast.success("Email sent successfully!")
+          } catch (error) {
+            console.error("Error sending email:", error)
+            toast.error("Failed to send email")
+          }
+        }}
       />
+
+      <ToastContainer />
 
     </div>
   )

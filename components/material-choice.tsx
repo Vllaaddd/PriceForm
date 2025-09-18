@@ -6,7 +6,7 @@ import { InputField } from "./input-field"
 import { Api } from "@/services/api-client"
 import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
-import { send } from "process"
+import { ToastContainer, toast } from 'react-toastify';
 
 type CalculationForm = {
   creator?: string
@@ -86,10 +86,11 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
     e.preventDefault()
 
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-    
+
     await Api.calculations.createCalculation(cleanForm)
     sendEmail(email || "", cleanForm)
     setForm({})
+    toast.success('Calculation created!')
   }
 
   const handleSubmitAndEmail = async (e: FormEvent) => {
@@ -104,7 +105,6 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
     const created = await Api.calculations.createCalculation(cleanForm)
 
-    sendEmail(email || "", cleanForm)
     setNewCalculation(created)
     setIsModalOpen(true)
     setForm({})
@@ -369,8 +369,18 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
       <EmailModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSend={(email) => sendEmail(email, newCalculation)}
+        onSend={async (email) => {
+          try {
+            await sendEmail(email, newCalculation)
+            toast.success("Calculation created and email sent successfully!")
+          } catch (error) {
+            console.error("Error sending email:", error)
+            toast.error("Failed to send email")
+          }
+        }}
       />
+
+      <ToastContainer />
     </>
   )
 }
