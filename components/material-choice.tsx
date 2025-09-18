@@ -6,6 +6,7 @@ import { InputField } from "./input-field"
 import { Api } from "@/services/api-client"
 import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
+import { send } from "process"
 
 type CalculationForm = {
   creator?: string
@@ -75,6 +76,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
   const selectedMaterial = materials.find(m => m.name === form.material)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
+  const email = 'vladikhoncharuk@gmail.com'
 
   const handleChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -82,15 +84,27 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
+    
     await Api.calculations.createCalculation(cleanForm)
+    sendEmail(email || "", cleanForm)
     setForm({})
   }
 
   const handleSubmitAndEmail = async (e: FormEvent) => {
     e.preventDefault()
+
+    const formEl = e.target as HTMLFormElement
+    if (!formEl.closest("form")?.checkValidity()) {
+      formEl.closest("form")?.reportValidity()
+      return
+    }
+
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
     const created = await Api.calculations.createCalculation(cleanForm)
+
+    sendEmail(email || "", cleanForm)
     setNewCalculation(created)
     setIsModalOpen(true)
     setForm({})
@@ -343,7 +357,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
               Create calculation
             </button>
             <button 
-              type="submit" 
+              type="button" 
               className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
               onClick={handleSubmitAndEmail}
             >
