@@ -20,7 +20,7 @@ export const Header: FC = () => {
 
     return(
         <header className="bg-white p-4 flex items-center">
-            <Image src='/fora-logo.png' alt="Logo" width={100} height={40} />
+            <Image src='/fora-logo.png' alt="Logo" width={50} height={20} className="md:w-24" />
             <Container>
                 <div className="flex items-center gap-10 justify-center">
                     <Link href={'/'}>
