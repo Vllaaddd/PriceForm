@@ -78,7 +78,7 @@ export default function Home(){
                                         </td>
                                         <td className="p-3">{calculation.material}</td>
                                         <td className="p-3">
-                                            {calculation.material === "BP" ? (
+                                            {calculation.material === "Backing paper" ? (
                                                 `${calculation?.materialWidth} × ${calculation.rollLength} mm`
                                             ) : (
                                                 `${calculation.materialWidth} × ${calculation.materialLength} ×
@@ -107,9 +107,10 @@ export default function Home(){
                             >
                                 <h2 className="text-lg font-bold mb-2">{calculation.title}</h2>
                                 <p className="text-sm text-gray-600 mb-1">Material: {calculation.material}</p>
+                                <p className="text-sm text-gray-600 mb-1">Roll type: {calculation.roll}</p>
                                 <p className="text-sm text-gray-600 mb-1">Color: {calculation.materialColor}</p>
                                 <p className="text-sm text-gray-600 mb-1">
-                                    {calculation.material === "BP" ? (
+                                    {calculation.material === "Backing paper" ? (
                                         `${calculation?.materialWidth} × ${calculation.rollLength} mm`
                                     ) : (
                                         `${calculation.materialWidth} × ${calculation.materialLength} ×

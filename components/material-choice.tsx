@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { FC, FormEvent, useEffect, useState } from "react"
 import { SelectField } from "./select-field"
@@ -11,19 +11,21 @@ import { ToastContainer, toast } from 'react-toastify';
 type CalculationForm = {
   creator?: string | null
   title?: string | null
+  roll?: string | null
   material?: string | null
   materialWidth?: number | null
   materialThickness?: number | null
   materialLength?: number | null
   materialColor?: string | null
   otherProperties?: string | null
-  skilletFormat?: number | null
+  skilletFormat?: string | null
   skilletKnife?: string | null
   skilletDensity?: number | null
   boxType?: string | null
   boxColor?: string | null
   boxPrint?: string | null
   boxExecution?: string | null
+  lochstanzlinge?: string | null
   rollsPerCarton?: number | null
   antislidePaperSheets?: string | null
   cartonPerPallet?: number | null
@@ -42,19 +44,24 @@ type CalculationForm = {
   sheetQuantity?: number | null
 }
 
-interface Material {
+type Roll = {
   name: string;
-  width: number[];
+  materials: Material[];
+};
+
+type Material = {
+  name: string;
+  width?: number[];
   thickness?: number[];
   density?: number[];
   typeOfProduct?: string[];
-  color: string[];
-  otherProperties: string[];
+  color?: string[];
+  otherProperties?: string[];
   id: number;
-}
+};
 
 interface Skillet {
-  format: (number | string)[]
+  format: string[]
   knife: string[]
   density: number[]
 }
@@ -71,20 +78,23 @@ interface Delivery {
 }
 
 interface Props {
-  materials: Material[]
+  rolls: Roll[]
   skillet: Skillet
   box: Box
   delivery: Delivery
   initialCalculation?: CalculationForm
+  lochstanzlinge: string[]
 }
 
-export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, initialCalculation }) => {
+export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initialCalculation, lochstanzlinge }) => {
 
   const [form, setForm] = useState<CalculationForm>(initialCalculation || {})
-  const selectedMaterial = materials.find(m => m.name === form.material)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
   const email = 'vladikhoncharuk@gmail.com'
+
+  const selectedRoll = rolls.find(r => r.name === form.roll)
+  const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)  
 
   const handleChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -92,9 +102,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-
     await Api.calculations.createCalculation(cleanForm)
     sendEmail(email || "", cleanForm)
     setForm({})
@@ -103,16 +111,13 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
   const handleSubmitAndEmail = async (e: FormEvent) => {
     e.preventDefault()
-
     const formEl = e.target as HTMLFormElement
     if (!formEl.closest("form")?.checkValidity()) {
       formEl.closest("form")?.reportValidity()
       return
     }
-
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
     const created = await Api.calculations.createCalculation(cleanForm)
-
     setNewCalculation(created)
     setIsModalOpen(true)
     setForm({})
@@ -134,18 +139,10 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
   useEffect(() => {
     if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
       setForm(prev => ({ ...prev, deliveryAddress: "Singen" }))
-    }else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
+    } else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
       setForm(prev => ({ ...prev, deliveryAddress: "" }))
     }
   }, [form.deliveryConditions])
-
-  useEffect(() => {
-    if (form.material === "Alu") {
-      setForm(prev => ({ ...prev, materialColor: "Silver" }))
-    } else if (form.material === "Pe") {
-      setForm(prev => ({ ...prev, materialColor: "Transparent" }))
-    }
-  }, [form.material])
 
   return (
     <>
@@ -164,15 +161,27 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           {/* Creator */}
           <InputField label="Creator (your email)" type="email" value={form.creator || ""} onChange={(e) => handleChange("creator", e.target.value)} />
 
-          {/* Матеріал */}
-          <SelectField label="Material" value={form.material || ""} onChange={(e) => handleChange("material", e.target.value)}>
-            <option value="">-- choose material --</option>
-            {materials.map((m) => (
-              <option key={m.id} value={m.name}>
-                {m.name}
+          {/* Roll */}
+          <SelectField label="Roll type" value={form.roll || ""} onChange={(e) => handleChange("roll", e.target.value)}>
+            <option value="">-- choose roll type --</option>
+            {rolls.map((r, i) => (
+              <option key={i} value={r.name}>
+                {r.name}
               </option>
             ))}
           </SelectField>
+
+          {/* Матеріал */}
+          {selectedRoll && (
+            <SelectField label="Material" value={form.material || ""} onChange={(e) => handleChange("material", e.target.value)}>
+              <option value="">-- choose material --</option>
+              {selectedRoll.materials.map((m) => (
+                <option key={m.id} value={m.name}>
+                  {m.name}
+                </option>
+              ))}
+            </SelectField>
+          )}
 
           {/* Ширина */}
           <SelectField
@@ -182,14 +191,14 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             disabled={!selectedMaterial}
           >
             <option value="">-- choose width --</option>
-            {selectedMaterial?.width.map((w, i) => (
+            {selectedMaterial?.width?.map((w, i) => (
               <option key={i} value={w}>
                 {w}
               </option>
             ))}
           </SelectField>
 
-          {selectedMaterial?.name !== 'BP' && (
+          {selectedMaterial?.name !== 'Backing paper' && (
             <>
               {/* Товщина */}
               <SelectField
@@ -211,7 +220,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             </>
           )}
 
-          {selectedMaterial?.name === 'BP' && (
+          {selectedMaterial?.name === 'Backing paper' && (
             <>
               {/* Density */}
               <SelectField
@@ -259,13 +268,13 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Колір */}
           <SelectField
-            label={selectedMaterial?.name === 'BP' ? 'Paper color' : 'Color'}
+            label={selectedRoll?.name === 'BP' ? 'Paper color' : 'Color'}
             value={form.materialColor || ""}
             onChange={(e) => handleChange("materialColor", e.target.value)}
             disabled={!selectedMaterial}
           >
             <option value="">-- choose color --</option>
-            {selectedMaterial?.color.map((c, i) => (
+            {selectedMaterial?.color?.map((c, i) => (
               <option key={i} value={c}>
                 {c}
               </option>
@@ -280,7 +289,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             disabled={!selectedMaterial}
           >
             <option value="">-- choose other properties --</option>
-            {selectedMaterial?.otherProperties.map((o, i) => (
+            {selectedMaterial?.otherProperties?.map((o, i) => (
               <option key={i} value={o}>
                 {o}
               </option>
@@ -288,23 +297,39 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           </SelectField>
 
           {/* Skillet format */}
-          <SelectField label="Skillet format" value={form.skilletFormat || ""} onChange={(e) => handleChange("skilletFormat", Number(e.target.value))}>
+          <SelectField label="Skillet format" value={form.skilletFormat || ""} onChange={(e) => handleChange("skilletFormat", String(e.target.value))}>
             <option value="">-- choose skillet format --</option>
-            {(selectedMaterial?.name === "BP" 
-                ? skillet.format.slice(4, 8)
-                : skillet.format.slice(0, 4)
-            ).map((f, i) => (
-              <option key={i} value={f}>
-                {f}
-              </option>
-            ))}
+            {(() => {
+              let formats: string[] = skillet.format;
+
+              if (selectedRoll?.name === "BP") {
+                formats = skillet.format.slice(4, 8);
+              } else if (selectedRoll?.name === "Catering") {
+                formats = skillet.format.slice(7, 9);
+              } else {
+                formats = skillet.format.slice(0, 4);
+              }
+
+              return formats.map((f, i) => (
+                <option key={i} value={f}>
+                  {f}
+                </option>
+              ));
+            })()}
           </SelectField>
 
           {/* Skillet knife */}
-          <SelectField label="Skillet knife" value={form.skilletKnife || ""} onChange={(e) => handleChange("skilletKnife", e.target.value)}>
+          <SelectField
+            label="Skillet knife"
+            value={form.skilletKnife || ""}
+            onChange={(e) => handleChange("skilletKnife", e.target.value)}
+          >
             <option value="">-- choose skillet knife --</option>
-            {(selectedMaterial?.name === "BP" 
-                ? skillet.knife.slice(5, 9)
+            {(
+              selectedRoll?.name === "BP"
+                ? [skillet.knife[0], ...skillet.knife.slice(-3)]
+                : selectedRoll?.name === "Catering"
+                ? [skillet.knife[0], ...skillet.knife.slice(-2)]
                 : skillet.knife.slice(0, 5)
             ).map((k, i) => (
               <option key={i} value={k}>
@@ -313,15 +338,31 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             ))}
           </SelectField>
 
-          {/* Skillet density */}
-          <SelectField label="Skillet density" value={form.skilletDensity || ""} onChange={(e) => handleChange("skilletDensity", Number(e.target.value))}>
-            <option value="">-- choose skillet density --</option>
-            {skillet.density.map((d, i) => (
-              <option key={i} value={d}>
-                {d}
-              </option>
-            ))}
-          </SelectField>
+          {selectedRoll?.name === "Catering" ?
+          <>
+            {/* Lochstanzlinge */}
+              <SelectField label="Lochstanzlinge" value={form.lochstanzlinge || ""} onChange={(e) => handleChange("lochstanzlinge", e.target.value)}>
+                <option value="">-- choose lochstanzlinge --</option>
+                {lochstanzlinge.map((l, i) => (
+                  <option key={i} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </SelectField>
+          </>
+          : (
+            <>
+              {/* Skillet density */}
+              <SelectField label="Skillet density" value={form.skilletDensity || ""} onChange={(e) => handleChange("skilletDensity", Number(e.target.value))}>
+                <option value="">-- choose skillet density --</option>
+                {skillet.density.map((d, i) => (
+                  <option key={i} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </SelectField>
+            </>
+          )}
 
           {/* Box */}
           <SelectField label="Box type" value={form.boxType || ""} onChange={(e) => handleChange("boxType", e.target.value)}>
@@ -346,7 +387,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           {/* Друк коробки */}
           <SelectField label="Box print" value={form.boxPrint || ""} onChange={(e) => handleChange("boxPrint", e.target.value)}>
             <option value="">-- choose box print --</option>
-            {(selectedMaterial?.name === "BP" 
+            {(selectedRoll?.name === "BP" 
                 ? box.print.slice(0, -1)
                 : box.print
             ).map((p, i) => (
@@ -417,19 +458,20 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
           {/* Remarks */}
           <InputField label="Remarks" type="string" value={form.remarks || ""} onChange={(e) => handleChange("remarks", e.target.value)} required={false} />
+            
         </div>
 
         <div className="flex justify-center gap-5">
-            <button type="submit" className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
-              Create calculation
-            </button>
-            <button 
-              type="button" 
-              className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
-              onClick={handleSubmitAndEmail}
-            >
-              Create calculation and send to email
-            </button>
+          <button type="submit" className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
+            Create calculation
+          </button>
+          <button 
+            type="button" 
+            className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+            onClick={handleSubmitAndEmail}
+          >
+            Create calculation and send to email
+          </button>
         </div>
       </form>
 

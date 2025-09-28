@@ -16,14 +16,15 @@ export async function POST(req: NextRequest) {
     const fields = [
         { label: "Title", value: calculation.title },
         { label: "Creator", value: calculation.creator },
+        { label: "Roll", value: calculation.roll },
         { label: "Material", value: calculation.material },
         { label: "Material width", value: `${calculation.materialWidth} mm` },
-        ...(calculation.material !== 'BP' ? [
+        ...(calculation.material !== 'Backing paper' ? [
           { label: "Material thickness", value: `${calculation.materialThickness} mm` },
           { label: "Material length", value: `${calculation.materialLength} mm` },
         ] : []),
-        { label: calculation.material === 'BP' ? 'Paper color' : 'Material color', value: calculation.materialColor },
-        ...(calculation.material === 'BP' ? [
+        { label: calculation.material === 'Backing paper' ? 'Paper color' : 'Material color', value: calculation.materialColor },
+        ...(calculation.material === 'Backing paper' ? [
           { label: "Density", value: `${calculation.density} g/m²` },
           { label: "Roll length", value: `${calculation.rollLength} m` },
           { label: "Type of product", value: calculation.typeOfProduct },
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
         { label: "Other properties", value: calculation.otherProperties },
         { label: "Skillet format", value: calculation.skilletFormat },
         { label: "Skillet knife", value: calculation.skilletKnife },
-        { label: "Skillet density", value: `${calculation.skilletDensity} g/m²` },
+        calculation.roll === 'Catering' ? { label: "Lochstanzlinge", value: calculation.lochstanzlinge } : { label: "Skillet density", value: `${calculation.skilletDensity} g/m²` },
         { label: "Box type", value: calculation.boxType },
         { label: "Box color", value: calculation.boxColor },
         { label: "Box print", value: calculation.boxPrint },

@@ -12,19 +12,21 @@ model Calculation{
 
     creator String
     title String
+    roll String
     material String
     materialWidth Int
     materialThickness Int?
     materialLength Int?
     materialColor String
     otherProperties String
-    skilletFormat Int
+    skilletFormat String
     skilletKnife String
-    skilletDensity Int
+    skilletDensity Int?
     boxType String
     boxColor String
     boxPrint String
     boxExecution String
+    lochstanzlinge String?
     rollsPerCarton Int
     antislidePaperSheets String
     cartonPerPallet Int

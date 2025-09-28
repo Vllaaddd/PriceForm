@@ -41,10 +41,11 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Info label="Creator" value={calculation.creator} />
+              <Info label="Roll type" value={calculation.roll} />
               <Info label="Material" value={calculation.material} />
-              <Info label={calculation.material === "BP" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
+              <Info label={calculation.material === "Backing paper" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
               <Info label="Width" value={`${calculation.materialWidth} мм`} />
-              {calculation.material === "BP" ? (
+              {calculation.material === "Backing paper" ? (
                 <>
                   <Info label="Density" value={`${calculation.density} g/m²`} />
                   <Info label="Type of product" value={`${calculation.typeOfProduct}`} />
@@ -62,7 +63,11 @@ export default function Home() {
               <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
               <Info label="Skillet knife" value={calculation.skilletKnife} />
-              <Info label="Skillet density" value={`${calculation.skilletDensity} g/m²`} />
+              {calculation.roll === 'Catering' ?
+                <Info label="Lochstanzlinge" value={calculation.lochstanzlinge ?? ""} />
+               : (
+                <Info label="Skillet density" value={`${calculation.skilletDensity} g/m²`} />
+              )}
               <Info label="Box type" value={calculation.boxType} />
               <Info label="Box color" value={calculation.boxColor} />
               <Info label="Box print" value={calculation.boxPrint} />

@@ -6,19 +6,24 @@ import { Calculation } from '@prisma/client';
 import { MaterialChoice } from '@/components/material-choice';
 import { Api } from '@/services/api-client';
 
+type Roll = {
+  name: string;
+  materials: Material[];
+};
+
 type Material = {
   name: string;
-  width: number[];
+  width?: number[];
   thickness?: number[];
   density?: number[];
   typeOfProduct?: string[];
-  color: string[];
-  otherProperties: string[];
+  color?: string[];
+  otherProperties?: string[];
   id: number;
 };
 
 type Skillet = {
-  format: (number | string)[];
+  format: string[];
   knife: string[];
   density: number[];
 };
@@ -35,13 +40,14 @@ type Delivery = {
 };
 
 type Props = {
-  materials: Material[];
+  rolls: Roll[];
   skillet: Skillet;
   box: Box;
   delivery: Delivery;
+  lochstanzlinge: string[];
 };
 
-export default function HomeClient({ materials, skillet, box, delivery }: Props) {
+export default function HomeClient({ rolls, skillet, box, delivery, lochstanzlinge }: Props) {
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
 
@@ -69,11 +75,12 @@ export default function HomeClient({ materials, skillet, box, delivery }: Props)
         </h1>
         <div className="bg-white rounded-b-2xl shadow-lg p-6">
             <MaterialChoice
-                materials={materials}
+                rolls={rolls}
                 skillet={skillet}
                 box={box}
                 delivery={delivery}
                 initialCalculation={initialCalculation}
+                lochstanzlinge={lochstanzlinge}
             />
         </div>
     </div>
