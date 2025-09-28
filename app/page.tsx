@@ -29,11 +29,20 @@ export default function Page() {
       otherProperties: ['Factor 1', 'Factor 2', 'Factor 3'],
       id: 3,
     },
+    {
+      name: 'BP',
+      width: [300, 330, 360, 380, 430, 450],
+      color: ['White', 'Brown'],
+      otherProperties: ['Printed'],
+      density: [35, 37, 39, 40],
+      typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
+      id: 4,
+    }
   ];
 
   const skillet = {
-    format: [39, 45, 50, 52],
-    knife: ['No knife', 'Paper knife', 'Straight plastic knife', 'V-type plastic knife', 'U-type plastic knife'],
+    format: [39, 45, 50, 52, 45, 60, 90, 'Without skillet/lose'],
+    knife: ['No knife', 'Paper knife', 'Straight plastic knife', 'V-type plastic knife', 'U-type plastic knife', 'No knife', 'Straight plastic knife', 'Slider', 'Clip-on saw'],
     density: [275, 350, 375, 400],
   };
 

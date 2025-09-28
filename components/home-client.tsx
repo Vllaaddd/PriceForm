@@ -9,14 +9,16 @@ import { Api } from '@/services/api-client';
 type Material = {
   name: string;
   width: number[];
-  thickness: number[];
+  thickness?: number[];
+  density?: number[];
+  typeOfProduct?: string[];
   color: string[];
   otherProperties: string[];
   id: number;
 };
 
 type Skillet = {
-  format: number[];
+  format: (number | string)[];
   knife: string[];
   density: number[];
 };

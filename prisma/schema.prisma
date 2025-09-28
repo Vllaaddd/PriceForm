@@ -14,8 +14,8 @@ model Calculation{
     title String
     material String
     materialWidth Int
-    materialThickness Int
-    materialLength Int
+    materialThickness Int?
+    materialLength Int?
     materialColor String
     otherProperties String
     skilletFormat Int
@@ -29,12 +29,18 @@ model Calculation{
     antislidePaperSheets String
     cartonPerPallet Int
     totalOrderInRolls Int
-    totalOrderInPallets Int
+    totalOrderInPallets Float
     period String
     deliveryConditions String
     deliveryAddress String
     referenceArticle String?
     remarks String?
+    density Int?
+    typeOfProduct String?
+    rollLength Int?
+    sheetWidth Int?
+    sheetLength Int?
+    sheetQuantity Int?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

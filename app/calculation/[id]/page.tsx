@@ -42,10 +42,23 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Info label="Creator" value={calculation.creator} />
               <Info label="Material" value={calculation.material} />
-              <Info label="Material color" value={calculation.materialColor} />
+              <Info label={calculation.material === "BP" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
               <Info label="Width" value={`${calculation.materialWidth} мм`} />
-              <Info label="Length" value={`${calculation.materialLength} мм`} />
-              <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+              {calculation.material === "BP" ? (
+                <>
+                  <Info label="Density" value={`${calculation.density} g/m²`} />
+                  <Info label="Type of product" value={`${calculation.typeOfProduct}`} />
+                  <Info label="Roll length" value={`${calculation.rollLength} м`} />
+                  <Info label="Sheet width" value={`${calculation.sheetWidth}`} />
+                  <Info label="Sheet length" value={`${calculation.sheetLength}`} />
+                  <Info label="Sheet quantity" value={`${calculation.sheetQuantity}`} />
+                </>
+              ) : (
+                <>
+                  <Info label="Length" value={`${calculation.materialLength} мм`} />
+                  <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+                </>
+              )}
               <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
               <Info label="Skillet knife" value={calculation.skilletKnife} />

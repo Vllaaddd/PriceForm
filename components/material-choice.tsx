@@ -9,44 +9,52 @@ import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 
 type CalculationForm = {
-  creator?: string
-  title?: string
-  material?: string
-  materialWidth?: number
-  materialThickness?: number
-  materialLength?: number
-  materialColor?: string
-  otherProperties?: string
-  skilletFormat?: number
-  skilletKnife?: string
-  skilletDensity?: number
-  boxType?: string
-  boxColor?: string
-  boxPrint?: string
-  boxExecution?: string
-  rollsPerCarton?: number
-  antislidePaperSheets?: string
-  cartonPerPallet?: number
-  totalOrderInRolls?: number
-  totalOrderInPallets?: number
-  period?: string
-  deliveryConditions?: string
-  deliveryAddress?: string
+  creator?: string | null
+  title?: string | null
+  material?: string | null
+  materialWidth?: number | null
+  materialThickness?: number | null
+  materialLength?: number | null
+  materialColor?: string | null
+  otherProperties?: string | null
+  skilletFormat?: number | null
+  skilletKnife?: string | null
+  skilletDensity?: number | null
+  boxType?: string | null
+  boxColor?: string | null
+  boxPrint?: string | null
+  boxExecution?: string | null
+  rollsPerCarton?: number | null
+  antislidePaperSheets?: string | null
+  cartonPerPallet?: number | null
+  totalOrderInRolls?: number | null
+  totalOrderInPallets?: number | null
+  period?: string | null
+  deliveryConditions?: string | null
+  deliveryAddress?: string | null
   referenceArticle?: string | null
   remarks?: string | null
+  density?: number | null
+  typeOfProduct?: string | null
+  rollLength?: number | null
+  sheetWidth?: number | null
+  sheetLength?: number | null
+  sheetQuantity?: number | null
 }
 
 interface Material {
-  id: number
-  name: string
-  width: number[]
-  thickness: number[]
-  color: string[]
-  otherProperties: string[]
+  name: string;
+  width: number[];
+  thickness?: number[];
+  density?: number[];
+  typeOfProduct?: string[];
+  color: string[];
+  otherProperties: string[];
+  id: number;
 }
 
 interface Skillet {
-  format: number[]
+  format: (number | string)[]
   knife: string[]
   density: number[]
 }
@@ -76,7 +84,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
   const selectedMaterial = materials.find(m => m.name === form.material)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
-  const email = 'andriy.goncharuk82@gmail.com'
+  const email = 'vladikhoncharuk@gmail.com'
 
   const handleChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -125,7 +133,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
 
   useEffect(() => {
     if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
-      setForm(prev => ({ ...prev, deliveryAddress: "Sinngen" }))
+      setForm(prev => ({ ...prev, deliveryAddress: "Singen" }))
     }else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
       setForm(prev => ({ ...prev, deliveryAddress: "" }))
     }
@@ -154,7 +162,7 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           <InputField label="Title" type="string" value={form.title || ""} onChange={(e) => handleChange("title", e.target.value)} />
 
           {/* Creator */}
-          <InputField label="Creator (your email)" type="string" value={form.creator || ""} onChange={(e) => handleChange("creator", e.target.value)} />
+          <InputField label="Creator (your email)" type="email" value={form.creator || ""} onChange={(e) => handleChange("creator", e.target.value)} />
 
           {/* Матеріал */}
           <SelectField label="Material" value={form.material || ""} onChange={(e) => handleChange("material", e.target.value)}>
@@ -181,27 +189,77 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             ))}
           </SelectField>
 
-          {/* Товщина */}
-          <SelectField
-            label="Thickness (my)"
-            value={form.materialThickness || ""}
-            onChange={(e) => handleChange("materialThickness", Number(e.target.value))}
-            disabled={!selectedMaterial}
-          >
-            <option value="">-- choose thickness --</option>
-            {selectedMaterial?.thickness.map((t, i) => (
-              <option key={i} value={t}>
-                {t}
-              </option>
-            ))}
-          </SelectField>
+          {selectedMaterial?.name !== 'BP' && (
+            <>
+              {/* Товщина */}
+              <SelectField
+                label="Thickness (my)"
+                value={form.materialThickness || ""}
+                onChange={(e) => handleChange("materialThickness", Number(e.target.value))}
+                disabled={!selectedMaterial}
+              >
+                <option value="">-- choose thickness --</option>
+                {selectedMaterial?.thickness?.map((t, i) => (
+                  <option key={i} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </SelectField>
 
-          {/* Довжина */}
-          <InputField label="Length (m)" type="number" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
+              {/* Довжина */}
+              <InputField label="Length (m)" type="number" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
+            </>
+          )}
+
+          {selectedMaterial?.name === 'BP' && (
+            <>
+              {/* Density */}
+              <SelectField
+                label="Density (g/m²)"
+                value={form.density || ""}
+                onChange={(e) => handleChange("density", Number(e.target.value))}
+                disabled={!selectedMaterial}
+              >
+                <option value="">-- choose density --</option>
+                {selectedMaterial?.density?.map((d, i) => (
+                  <option key={i} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </SelectField>
+
+              {/* Type of product */}
+              <SelectField
+                label="Type of product"
+                value={form.typeOfProduct || ""}
+                onChange={(e) => handleChange("typeOfProduct", e.target.value)}
+                disabled={!selectedMaterial}
+              >
+                <option value="">-- choose type of product --</option>
+                {selectedMaterial?.typeOfProduct?.map((t, i) => (
+                  <option key={i} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </SelectField>
+
+              {/* Roll length */}
+              <InputField label="Roll length" type="number" value={form.rollLength || ""} onChange={(e) => handleChange("rollLength", Number(e.target.value))} />
+
+              {/* Sheet width */}
+              <InputField label="Sheet width" type="number" value={form.sheetWidth || ""} onChange={(e) => handleChange("sheetWidth", Number(e.target.value))} />
+
+              {/* Sheet length */}
+              <InputField label="Sheet length" type="number" value={form.sheetLength || ""} onChange={(e) => handleChange("sheetLength", Number(e.target.value))} />
+
+              {/* Sheet quantity */}
+              <InputField label="Sheet quantity (max 30)" type="number" max={30} value={form.sheetQuantity || ""} onChange={(e) => handleChange("sheetQuantity", Number(e.target.value))} />
+            </>
+          )}
 
           {/* Колір */}
           <SelectField
-            label="Color"
+            label={selectedMaterial?.name === 'BP' ? 'Paper color' : 'Color'}
             value={form.materialColor || ""}
             onChange={(e) => handleChange("materialColor", e.target.value)}
             disabled={!selectedMaterial}
@@ -229,10 +287,13 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
             ))}
           </SelectField>
 
-          {/* Skillet */}
+          {/* Skillet format */}
           <SelectField label="Skillet format" value={form.skilletFormat || ""} onChange={(e) => handleChange("skilletFormat", Number(e.target.value))}>
             <option value="">-- choose skillet format --</option>
-            {skillet.format.map((f, i) => (
+            {(selectedMaterial?.name === "BP" 
+                ? skillet.format.slice(4, 8)
+                : skillet.format.slice(0, 4)
+            ).map((f, i) => (
               <option key={i} value={f}>
                 {f}
               </option>
@@ -242,7 +303,10 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           {/* Skillet knife */}
           <SelectField label="Skillet knife" value={form.skilletKnife || ""} onChange={(e) => handleChange("skilletKnife", e.target.value)}>
             <option value="">-- choose skillet knife --</option>
-            {skillet.knife.map((k, i) => (
+            {(selectedMaterial?.name === "BP" 
+                ? skillet.knife.slice(5, 9)
+                : skillet.knife.slice(0, 5)
+            ).map((k, i) => (
               <option key={i} value={k}>
                 {k}
               </option>
@@ -282,7 +346,10 @@ export const MaterialChoice: FC<Props> = ({ materials, skillet, box, delivery, i
           {/* Друк коробки */}
           <SelectField label="Box print" value={form.boxPrint || ""} onChange={(e) => handleChange("boxPrint", e.target.value)}>
             <option value="">-- choose box print --</option>
-            {box.print.map((p, i) => (
+            {(selectedMaterial?.name === "BP" 
+                ? box.print.slice(0, -1)
+                : box.print
+            ).map((p, i) => (
               <option key={i} value={p}>
                 {p}
               </option>

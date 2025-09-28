@@ -15,7 +15,7 @@ export default function Home(){
         async function fetchCalculations(){
             try{
                 const calculations = await Api.calculations.getAll()
-                setCalculations(calculations)      
+                setCalculations(calculations)
             }catch(err){
                 console.error(err)
             }
@@ -78,8 +78,12 @@ export default function Home(){
                                         </td>
                                         <td className="p-3">{calculation.material}</td>
                                         <td className="p-3">
-                                            {calculation.materialWidth} × {calculation.materialLength} ×{" "}
-                                            {calculation.materialThickness} mm
+                                            {calculation.material === "BP" ? (
+                                                `${calculation?.materialWidth} × ${calculation.rollLength} mm`
+                                            ) : (
+                                                `${calculation.materialWidth} × ${calculation.materialLength} ×
+                                                ${calculation.materialThickness} mm`
+                                            )}
                                         </td>
                                         <td className="p-3">{calculation.materialColor}</td>
                                         <td className="p-3">{calculation.boxType}</td>
@@ -105,7 +109,12 @@ export default function Home(){
                                 <p className="text-sm text-gray-600 mb-1">Material: {calculation.material}</p>
                                 <p className="text-sm text-gray-600 mb-1">Color: {calculation.materialColor}</p>
                                 <p className="text-sm text-gray-600 mb-1">
-                                    {calculation.materialWidth} × {calculation.materialLength} × {calculation.materialThickness} mm
+                                    {calculation.material === "BP" ? (
+                                        `${calculation?.materialWidth} × ${calculation.rollLength} mm`
+                                    ) : (
+                                        `${calculation.materialWidth} × ${calculation.materialLength} ×
+                                        ${calculation.materialThickness} mm`
+                                    )}
                                 </p>
                                 <p className="text-sm text-gray-600 mb-1">Box type: {calculation.boxType}</p>
                                 <p className="text-sm text-gray-600 mb-1">
