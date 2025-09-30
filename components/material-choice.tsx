@@ -198,7 +198,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             ))}
           </SelectField>
 
-          {selectedMaterial?.name !== 'Backing paper' && (
+          {selectedMaterial?.name !== 'Baking paper' && (
             <>
               {/* Товщина */}
               <SelectField
@@ -220,7 +220,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             </>
           )}
 
-          {selectedMaterial?.name === 'Backing paper' && (
+          {selectedMaterial?.name === 'Baking paper' && (
             <>
               {/* Density */}
               <SelectField
@@ -253,16 +253,39 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
               </SelectField>
 
               {/* Roll length */}
-              <InputField label="Roll length" type="number" value={form.rollLength || ""} onChange={(e) => handleChange("rollLength", Number(e.target.value))} />
+              <InputField
+                label="Roll length"
+                type="number" value={form.rollLength || ""}
+                onChange={(e) => handleChange("rollLength", Number(e.target.value))}
+                disabled={form.typeOfProduct === 'Consumer sheets'}
+              />
 
               {/* Sheet width */}
-              <InputField label="Sheet width" type="number" value={form.sheetWidth || ""} onChange={(e) => handleChange("sheetWidth", Number(e.target.value))} />
+              <InputField
+                label="Sheet width" type="number"
+                value={form.sheetWidth || ""}
+                onChange={(e) => handleChange("sheetWidth", Number(e.target.value))}
+                disabled={form.typeOfProduct !== 'Consumer sheets'}
+              />
 
               {/* Sheet length */}
-              <InputField label="Sheet length" type="number" value={form.sheetLength || ""} onChange={(e) => handleChange("sheetLength", Number(e.target.value))} />
+              <InputField
+                label="Sheet length"
+                type="number"
+                value={form.sheetLength || ""}
+                onChange={(e) => handleChange("sheetLength", Number(e.target.value))}
+                disabled={form.typeOfProduct !== 'Consumer sheets'}
+              />
 
               {/* Sheet quantity */}
-              <InputField label="Sheet quantity (max 30)" type="number" max={30} value={form.sheetQuantity || ""} onChange={(e) => handleChange("sheetQuantity", Number(e.target.value))} />
+              <InputField
+                label="Sheet quantity (max 30)"
+                type="number"
+                max={30}
+                value={form.sheetQuantity || ""}
+                onChange={(e) => handleChange("sheetQuantity", Number(e.target.value))}
+                disabled={form.typeOfProduct !== 'Consumer sheets'}
+              />
             </>
           )}
 

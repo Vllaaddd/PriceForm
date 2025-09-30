@@ -39,11 +39,11 @@ export default function Page() {
       name: 'BP',
       materials: [
         {
-          name: 'Backing paper',
+          name: 'Baking paper',
           width: [300, 330, 360, 380, 430, 450],
           color: ['White', 'Brown'],
           otherProperties: ['Printed'],
-          density: [35, 37, 39, 40],
+          density: [35, 37, 40, 41],
           typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
           id: 4,
         }

@@ -43,9 +43,9 @@ export default function Home() {
               <Info label="Creator" value={calculation.creator} />
               <Info label="Roll type" value={calculation.roll} />
               <Info label="Material" value={calculation.material} />
-              <Info label={calculation.material === "Backing paper" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
+              <Info label={calculation.material === "Baking paper" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
               <Info label="Width" value={`${calculation.materialWidth} мм`} />
-              {calculation.material === "Backing paper" ? (
+              {calculation.material === "Baking paper" ? (
                 <>
                   <Info label="Density" value={`${calculation.density} g/m²`} />
                   <Info label="Type of product" value={`${calculation.typeOfProduct}`} />
