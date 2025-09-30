@@ -19,19 +19,22 @@ export async function POST(req: NextRequest) {
         { label: "Roll", value: calculation.roll },
         { label: "Material", value: calculation.material },
         { label: "Material width", value: `${calculation.materialWidth} mm` },
-        ...(calculation.material !== 'Backing paper' ? [
+        ...(calculation.material !== 'Baking paper' ? [
           { label: "Material thickness", value: `${calculation.materialThickness} mm` },
           { label: "Material length", value: `${calculation.materialLength} mm` },
         ] : []),
-        { label: calculation.material === 'Backing paper' ? 'Paper color' : 'Material color', value: calculation.materialColor },
-        ...(calculation.material === 'Backing paper' ? [
+        { label: calculation.material === 'Baking paper' ? 'Paper color' : 'Material color', value: calculation.materialColor },
+        ...(calculation.material === 'Baking paper' ? [
           { label: "Density", value: `${calculation.density} g/m²` },
-          { label: "Roll length", value: `${calculation.rollLength} m` },
           { label: "Type of product", value: calculation.typeOfProduct },
+        ] : []),
+        ...(calculation.typeOfProduct === 'Consumer sheets' ? [
           { label: "Sheet width", value: calculation.sheetWidth },
           { label: "Sheet length", value: calculation.sheetLength },
           { label: "Sheet quantity", value: calculation.sheetQuantity },
-        ] : []),
+        ] : [
+          { label: "Roll length", value: `${calculation.rollLength} m` },
+        ]),
         { label: "Other properties", value: calculation.otherProperties },
         { label: "Skillet format", value: calculation.skilletFormat },
         { label: "Skillet knife", value: calculation.skilletKnife },

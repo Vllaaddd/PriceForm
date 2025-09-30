@@ -49,15 +49,22 @@ export default function Home() {
                 <>
                   <Info label="Density" value={`${calculation.density} g/m²`} />
                   <Info label="Type of product" value={`${calculation.typeOfProduct}`} />
-                  <Info label="Roll length" value={`${calculation.rollLength} м`} />
+                </>
+              ) : (
+                <>
+                  <Info label="Length" value={`${calculation.materialLength} мм`} />
+                  <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+                </>
+              )}
+              {calculation.typeOfProduct === 'Consumer sheets' ? (
+                <>
                   <Info label="Sheet width" value={`${calculation.sheetWidth}`} />
                   <Info label="Sheet length" value={`${calculation.sheetLength}`} />
                   <Info label="Sheet quantity" value={`${calculation.sheetQuantity}`} />
                 </>
               ) : (
                 <>
-                  <Info label="Length" value={`${calculation.materialLength} мм`} />
-                  <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+                  <Info label="Roll length" value={`${calculation.rollLength}`} />
                 </>
               )}
               <Info label="Other properties" value={calculation.otherProperties} />

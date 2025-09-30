@@ -76,6 +76,15 @@ export default function Page() {
           otherProperties: ['Factor 1', 'Factor 2', 'Factor 3'],
           id: 3,
         },
+        {
+          name: 'Baking paper',
+          width: [380],
+          color: ['White', 'Brown'],
+          otherProperties: ['Printed'],
+          density: [35, 37, 40, 41],
+          typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
+          id: 4,
+        }
       ]
     },
 
