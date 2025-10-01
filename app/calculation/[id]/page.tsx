@@ -28,7 +28,7 @@ export default function Home() {
       }
     }
     fetchCalculations()
-  }, [id])
+  }, [id])  
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
@@ -69,7 +69,9 @@ export default function Home() {
               )}
               <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
-              <Info label="Skillet knife" value={calculation.skilletKnife} />
+              {calculation.skilletKnife !== null && (
+                <Info label="Skillet knife" value={calculation.skilletKnife} />
+              )}
               {calculation.roll === 'Catering' ?
                 <Info label="Lochstanzlinge" value={calculation.lochstanzlinge ?? ""} />
                : (

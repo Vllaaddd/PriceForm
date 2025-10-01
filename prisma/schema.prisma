@@ -20,7 +20,7 @@ model Calculation{
     materialColor String
     otherProperties String
     skilletFormat String
-    skilletKnife String
+    skilletKnife String?
     skilletDensity Int?
     boxType String
     boxColor String

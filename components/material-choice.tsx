@@ -346,6 +346,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             label="Skillet knife"
             value={form.skilletKnife || ""}
             onChange={(e) => handleChange("skilletKnife", e.target.value)}
+            disabled={selectedMaterial?.name === 'Baking paper' && form.typeOfProduct === 'Consumer sheets'}
           >
             <option value="">-- choose skillet knife --</option>
             {(
@@ -362,17 +363,17 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
           </SelectField>
 
           {selectedRoll?.name === "Catering" ?
-          <>
-            {/* Lochstanzlinge */}
-              <SelectField label="Lochstanzlinge" value={form.lochstanzlinge || ""} onChange={(e) => handleChange("lochstanzlinge", e.target.value)}>
-                <option value="">-- choose lochstanzlinge --</option>
-                {lochstanzlinge.map((l, i) => (
-                  <option key={i} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </SelectField>
-          </>
+            <>
+              {/* Lochstanzlinge */}
+                <SelectField label="Lochstanzlinge" value={form.lochstanzlinge || ""} onChange={(e) => handleChange("lochstanzlinge", e.target.value)}>
+                  <option value="">-- choose lochstanzlinge --</option>
+                  {lochstanzlinge.map((l, i) => (
+                    <option key={i} value={l}>
+                      {l}
+                    </option>
+                  ))}
+                </SelectField>
+            </>
           : (
             <>
               {/* Skillet density */}
