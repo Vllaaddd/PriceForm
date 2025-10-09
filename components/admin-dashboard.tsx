@@ -93,7 +93,7 @@ export const AdminDashboard = () => {
                                             />
                                         </td>
                                         <td className="border px-3 py-2">{processingTime.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{line.costPerMin}</td>
+                                        <td className="border px-3 py-2">{line.costPerMin.toFixed(3)}</td>
                                         <td className="border px-3 py-2">{valuePerRoll.toFixed(3)}</td>
                                     </tr>
                                 )})}
@@ -146,7 +146,7 @@ export const AdminDashboard = () => {
                                             />
                                         </td>
                                         <td className="border px-3 py-2">{processingTime.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{line.costPerMin}</td>
+                                        <td className="border px-3 py-2">{line.costPerMin.toFixed(3)}</td>
                                         <td className="border px-3 py-2">{valuePerRoll.toFixed(3)}</td>
                                     </tr>
                                 )})}
