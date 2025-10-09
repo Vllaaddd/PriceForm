@@ -15,22 +15,22 @@ export const AdminDashboard = () => {
             setLines(allLines);
 
             const filteredMainLines = allLines
-            .filter((line) => line.lineType === "Main lines")
-            .sort((a, b) => {
-                if (a.materialType === b.materialType) {
-                    return a.length - b.length;
-                }
-                if (a.materialType === "Alu") return -1;
-                if (b.materialType === "Alu") return 1;
-                if (a.materialType === "Frischhaltefolie") return -1;
-                if (b.materialType === "Frischhaltefolie") return 1;
-                return 0;
-            });
+                .filter((line) => line.lineType === "Main lines")
+                .sort((a, b) => {
+                    if (a.materialType === b.materialType) {
+                        return a.length - b.length;
+                    }
+                    if (a.materialType === "Alu") return -1;
+                    if (b.materialType === "Alu") return 1;
+                    if (a.materialType === "Frischhaltefolie") return -1;
+                    if (b.materialType === "Frischhaltefolie") return 1;
+                    return 0;
+                });
             setMainLines(filteredMainLines);
 
             const filteredBPLines = allLines
-            .filter((line) => line.lineType === "BP lines")
-            .sort((a, b) => a.length - b.length);
+                .filter((line) => line.lineType === "BP lines")
+                .sort((a, b) => a.length - b.length);
 
             setBpLines(filteredBPLines);
         }
