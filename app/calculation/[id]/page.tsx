@@ -62,11 +62,11 @@ export default function Home() {
                   <Info label="Sheet length" value={`${calculation.sheetLength}`} />
                   <Info label="Sheet quantity" value={`${calculation.sheetQuantity}`} />
                 </>
-              ) : (
+              ) : calculation.typeOfProduct === 'Consumer roll' ? (
                 <>
                   <Info label="Roll length" value={`${calculation.rollLength}`} />
                 </>
-              )}
+              ): null}
               <Info label="Other properties" value={calculation.otherProperties} />
               <Info label="Skillet format" value={calculation.skilletFormat} />
               {calculation.skilletKnife !== null && (

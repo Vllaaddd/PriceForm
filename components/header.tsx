@@ -29,6 +29,9 @@ export const Header: FC = () => {
                     <Link href={'/all-calculations'}>
                         <Title active={pathname == '/all-calculations' ? true : false} title={'All calculations'} />
                     </Link>
+                    <Link href={'/admin'}>
+                        <Title active={pathname == '/admin' ? true : false} title={'Admin dashboard'} />
+                    </Link>
                 </div>
             </Container>
         </header>
