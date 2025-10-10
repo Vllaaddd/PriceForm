@@ -56,40 +56,49 @@ export default function Home(){
                 )}
 
                 {viewVariant === 'table' && (
-                    <div className="overflow-x-auto">
-                        <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
-                            <thead className="bg-gray-100 text-gray-700">
+                    <div className="overflow-x-auto shadow-md rounded-2xl border border-gray-200 bg-white">
+                        <table className="min-w-full text-sm text-left text-gray-700">
+                            <thead className="bg-gray-50 text-gray-900 uppercase font-medium">
                                 <tr>
-                                    <th className="p-3 text-left">Title</th>
-                                    <th className="p-3 text-left">Material</th>
-                                    <th className="p-3 text-left">Dimensions</th>
-                                    <th className="p-3 text-left">Color</th>
-                                    <th className="p-3 text-left">Box type</th>
-                                    <th className="p-3 text-left">Total rolls</th>
-                                    <th className="p-3 text-left">Period</th>
-                                    <th className="p-3 text-left">More info</th>
+                                    <th className="px-5 py-3">Title</th>
+                                    <th className="px-5 py-3">Material</th>
+                                    <th className="px-5 py-3">Dimensions</th>
+                                    <th className="px-5 py-3">Color</th>
+                                    <th className="px-5 py-3">Box type</th>
+                                    <th className="px-5 py-3">Total rolls</th>
+                                    <th className="px-5 py-3">Period</th>
+                                    <th className="px-5 py-3">More info</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {calculations.map((calculation) => (
-                                    <tr className="border-t hover:bg-gray-50 transition">
-                                        <td className="p-3 font-medium">
+                            <tbody className="divide-y divide-gray-100">
+                                {calculations.map((calculation, index) => (
+                                    <tr
+                                        key={calculation.id}
+                                        className={`transition-colors ${
+                                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                        } hover:bg-blue-50`}
+                                    >
+                                        <td className="px-5 py-3 font-medium text-gray-900">
                                             {calculation.title}
                                         </td>
-                                        <td className="p-3">{calculation.material}</td>
-                                        <td className="p-3">
-                                            {calculation.material === "Baking paper" ? (
-                                                `${calculation?.materialWidth} × ${calculation.rollLength} mm`
-                                            ) : (
-                                                `${calculation.materialWidth} × ${calculation.materialLength} ×
-                                                ${calculation.materialThickness} mm`
-                                            )}
+                                        <td className="px-5 py-3">{calculation.material}</td>
+                                        <td className="px-5 py-3">
+                                            {calculation.material === "Baking paper"
+                                            ? `${calculation?.materialWidth} × ${calculation.rollLength} mm`
+                                            : `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness} mm`}
                                         </td>
-                                        <td className="p-3">{calculation.materialColor}</td>
-                                        <td className="p-3">{calculation.boxType}</td>
-                                        <td className="p-3">{calculation.totalOrderInRolls}</td>
-                                        <td className="p-3">{calculation.period}</td>
-                                        <td className="p-3 underline font-bold"><Link href={`/calculation/${calculation.id}`}>See more</Link></td>
+                                        <td className="px-5 py-3">{calculation.materialColor}</td>
+                                        <td className="px-5 py-3">{calculation.boxType}</td>
+                                        <td className="px-5 py-3">{calculation.totalOrderInRolls}</td>
+                                        <td className="px-5 py-3">{calculation.period}</td>
+                                        <td className="px-5 py-3">
+                                            <Link
+                                                href={`/calculation/${calculation.id}`}
+                                                className="font-semibold text-blue-600 hover:underline"
+                                            >
+                                                More →
+                                            </Link>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

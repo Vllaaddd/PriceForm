@@ -1,16 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Api } from '@/services/api-client';
-import { Line } from '@prisma/client';
+import { Line, MaterialProperty } from '@prisma/client';
+import { LineTable } from './line-table';
+import { MaterialPropertiesTable } from './material-properties-table';
 
 export const AdminDashboard = () => {
     const [lines, setLines] = useState<Line[]>([]);
+    const [materialProperties, setMaterialProperties] = useState<MaterialProperty[]>([]);
     const [mainLines, setMainLines] = useState<Line[]>([]);
     const [bpLines, setBpLines] = useState<Line[]>([]);
-    const [rollLengths, setRollLengths] = useState<Record<number, number>>({});
+    const [speedLine1, setSpeedLine1] = useState<Line[]>([]);
+    const [speedLine2, setSpeedLine2] = useState<Line[]>([]);
 
     useEffect(() => {
-        async function fetchLines() {
+        async function fetchData() {
             const allLines = await Api.lines.getAll();
             setLines(allLines);
 
@@ -26,136 +30,91 @@ export const AdminDashboard = () => {
                     if (b.materialType === "Frischhaltefolie") return 1;
                     return 0;
                 });
-            setMainLines(filteredMainLines);
-
+            setMainLines(filteredMainLines)
+            
             const filteredBPLines = allLines
-                .filter((line) => line.lineType === "BP lines")
-                .sort((a, b) => a.length - b.length);
-
+            .filter((line) => line.lineType === "BP lines")
+            .sort((a, b) => a.length - b.length);
+            
             setBpLines(filteredBPLines);
+            
+            const filteredSpeedLine1 = allLines
+            .filter((line) => line.lineType === "Speed 4,5 and 4,6")
+            .sort((a, b) => {
+                if (a.materialType === b.materialType) {
+                    return a.length - b.length;
+                }
+                if (a.materialType === "Alu") return -1;
+                if (b.materialType === "Alu") return 1;
+                if (a.materialType === "Frischhaltefolie") return -1;
+                if (b.materialType === "Frischhaltefolie") return 1;
+                return 0;
+            });
+            
+            setSpeedLine1(filteredSpeedLine1);
+            
+            const filteredSpeedLine2 = allLines
+            .filter((line) => line.lineType === "Speed 6,4")
+            .sort((a, b) => {
+                if (a.materialType === b.materialType) {
+                    return a.length - b.length;
+                }
+                if (a.materialType === "Alu") return -1;
+                if (b.materialType === "Alu") return 1;
+                if (a.materialType === "Frischhaltefolie") return -1;
+                if (b.materialType === "Frischhaltefolie") return 1;
+                return 0;
+            });
+
+            setSpeedLine2(filteredSpeedLine2);
+
+            const allMaterialProperties = await Api.properties.getAll();
+            setMaterialProperties(allMaterialProperties.sort((a, b) => {
+                if (a.material === "Alu") return -1;
+                if (b.material === "Alu") return 1;
+                if (a.material === "PE") return -1;
+                if (b.material === "PE") return 1;
+                return 0;
+            }));       
         }
 
-        fetchLines();
+        fetchData();
     }, []);
-
-    const handleRollLengthChange = async (id: number, value: number) => {
-        setRollLengths((prev) => ({
-            ...prev,
-            [id]: value,
-        }));
-
-        await Api.lines.update(id, { rollLength: value });
-    };
 
   return (
     <div className='min-h-screen flex items-start justify-center bg-gray-200 p-4 pb-10'>
         <div className="p-4 text-center">
 
             {mainLines?.length > 0 ? (
-                <div className='mb-16'>
-                    <h1 className="text-xl font-bold mb-4">Av speed main lines</h1>
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="border px-3 py-2">Material type</th>
-                                <th className="border px-3 py-2">Length</th>
-                                <th className="border px-3 py-2">Total duration</th>
-                                <th className="border px-3 py-2">Total meters</th>
-                                <th className="border px-3 py-2">AV speed</th>
-                                <th className="border px-3 py-2">Roll length</th>
-                                <th className="border px-3 py-2">Processing time in mins</th>
-                                <th className="border px-3 py-2">Mashine & LabourCost for 1 min</th>
-                                <th className="border px-3 py-2">Value per roll</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mainLines?.map((line) => {
-
-                                const currentRollLength = rollLengths[line.id] ?? line.rollLength;
-                                const processingTime = currentRollLength / line.avSpeed;
-                                const valuePerRoll = processingTime * line.costPerMin;
-
-                                return (
-                                    <tr key={line.id}>
-                                        <td className="border px-3 py-2">{line.materialType}</td>
-                                        <td className="border px-3 py-2">{line.length}</td>
-                                        <td className="border px-3 py-2">{line.totalDuration}</td>
-                                        <td className="border px-3 py-2">{line.totalMeters}</td>
-                                        <td className="border px-3 py-2">{line.avSpeed}</td>
-                                        <td className="border px-3 py-2">
-                                            <input
-                                                type="string"
-                                                value={rollLengths[line.id] ?? line.rollLength ?? ''}
-                                                onChange={(e) =>
-                                                    handleRollLengthChange(line.id, Number(e.target.value))
-                                                }
-                                                className="w-24 p-1 border rounded"
-                                            />
-                                        </td>
-                                        <td className="border px-3 py-2">{processingTime.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{line.costPerMin.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{valuePerRoll.toFixed(3)}</td>
-                                    </tr>
-                                )})}
-                        </tbody>
-                    </table>
-                </div>
-                ) : (
-                    <p>No main lines available.</p>
+                <LineTable lines={mainLines} title='Av speed main lines' />
+            ) : (
+                <p className='pb-5'>Loading main lines...</p>
             )}
 
             {bpLines?.length > 0 ? (
-                <>
-                    <h1 className="text-xl font-bold mb-4">Av speed bp lines</h1>
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="border px-3 py-2">Material type</th>
-                                <th className="border px-3 py-2">Length</th>
-                                <th className="border px-3 py-2">Total duration</th>
-                                <th className="border px-3 py-2">Total meters</th>
-                                <th className="border px-3 py-2">AV speed</th>
-                                <th className="border px-3 py-2">Roll length</th>
-                                <th className="border px-3 py-2">Processing time in mins</th>
-                                <th className="border px-3 py-2">Mashine & LabourCost for 1 min</th>
-                                <th className="border px-3 py-2">Value per roll</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {bpLines?.map((line) => {
-
-                                const currentRollLength = rollLengths[line.id] ?? line.rollLength;
-                                const processingTime = currentRollLength / line.avSpeed;
-                                const valuePerRoll = processingTime * line.costPerMin;
-
-                                return (
-                                    <tr key={line.id}>
-                                        <td className="border px-3 py-2">{line.materialType}</td>
-                                        <td className="border px-3 py-2">{line.length}</td>
-                                        <td className="border px-3 py-2">{line.totalDuration}</td>
-                                        <td className="border px-3 py-2">{line.totalMeters}</td>
-                                        <td className="border px-3 py-2">{line.avSpeed}</td>
-                                        <td className="border px-3 py-2">
-                                            <input
-                                                type="string"
-                                                value={rollLengths[line.id] ?? line.rollLength ?? ''}
-                                                onChange={(e) =>
-                                                    handleRollLengthChange(line.id, Number(e.target.value))
-                                                }
-                                                className="w-24 p-1 border rounded"
-                                            />
-                                        </td>
-                                        <td className="border px-3 py-2">{processingTime.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{line.costPerMin.toFixed(3)}</td>
-                                        <td className="border px-3 py-2">{valuePerRoll.toFixed(3)}</td>
-                                    </tr>
-                                )})}
-                        </tbody>
-                    </table>
-                </>
-                ) : (
-                    <p>No bp lines available.</p>
+                <LineTable lines={bpLines} title='Av speed bp lines' />
+            ) : (
+                <p className='pb-5'>Loading bp lines...</p>
             )}
+
+            {speedLine1?.length > 0 ? (
+                <LineTable lines={speedLine1} title='Av speed line 4,5 and 4,6' />
+            ) : (
+                <p className='pb-5'>Loading speed line 4,5 and 4,6...</p>
+            )}
+
+            {speedLine2?.length > 0 ? (
+                <LineTable lines={speedLine2} title='Av speed line 6,4' />
+            ) : (
+                <p className='pb-5'>Loading speed line 6,4...</p>
+            )}
+
+            {speedLine2?.length > 0 ? (
+                <MaterialPropertiesTable materials={materialProperties} title='Material properties' />
+            ) : (
+                <p className='pb-5'>Loading material properties...</p>
+            )}
+
         </div>
     </div>
   );
