@@ -110,7 +110,7 @@ export const AdminDashboard = () => {
             )}
 
             {speedLine2?.length > 0 ? (
-                <MaterialPropertiesTable materials={materialProperties} title='Material properties' />
+                <MaterialPropertiesTable materials={materialProperties as any} title='Material properties' />
             ) : (
                 <p className='pb-5'>Loading material properties...</p>
             )}
