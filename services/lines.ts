@@ -10,6 +10,14 @@ export const getAll = async (): Promise<Line[]> => {
 
 }
 
+export const getOne = async (id: string): Promise<Line> => {
+
+    const { data } = await axiosInstance.get<Line>(`${ApiRoutes.LINES}/${id}`)
+
+    return data
+
+}
+
 export const update = async (id: number, data: Partial<Line>): Promise<Line[]> => {
 
     const res = await axiosInstance.patch<Line[]>(`${ApiRoutes.LINES}/${id}`, data)
@@ -18,3 +26,16 @@ export const update = async (id: number, data: Partial<Line>): Promise<Line[]> =
 
 }
 
+export const find = async (filters: {
+    material: string;
+    lineType: string;
+    length: number;
+}): Promise<Line> => {
+    const params = new URLSearchParams();
+    params.append("material", filters.material);
+    params.append("lineType", filters.lineType);
+    params.append("length", String(filters.length));
+
+    const { data } = await axiosInstance.get<Line>(`${ApiRoutes.LINES}/find?${params.toString()}`);
+    return data;
+};

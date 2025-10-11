@@ -10,6 +10,14 @@ export const getAll = async (): Promise<MaterialProperty[]> => {
 
 }
 
+export const getOne = async (material: string): Promise<MaterialProperty> => {
+
+    const { data } = await axiosInstance.get<MaterialProperty>(`${ApiRoutes.PROPERTIES}/find-by-material/${material}`)
+
+    return data
+
+}
+
 export const update = async (id: number, data: Partial<MaterialProperty>): Promise<MaterialProperty[]> => {
 
     const res = await axiosInstance.patch<MaterialProperty[]>(`${ApiRoutes.PROPERTIES}/${id}`, data)

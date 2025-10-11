@@ -24,7 +24,16 @@ export const LineTable: FC<Props> = ({ lines, title }) => {
 
     const [rollLengths, setRollLengths] = useState<Record<number, string>>({});
 
-    const handleRollLengthChange = async (id: number, rollLength: string, processingTime: number, valuePerRoll: number) => {
+    const handleRollLengthChange = async (id: number, rollLength: string) => {
+
+        const rollLengthNum = Number(rollLength);
+
+        const line = lines.find((line) => line.id === id);
+        if (!line) return;
+
+        const processingTime = rollLengthNum / line.avSpeed;
+        const valuePerRoll = processingTime * line.costPerMin;
+
         setRollLengths((prev) => ({
             ...prev,
             [id]: rollLength,
@@ -45,7 +54,7 @@ export const LineTable: FC<Props> = ({ lines, title }) => {
                     <thead className="bg-gray-50 text-gray-900 text-sm uppercase font-medium">
                         <tr>
                             <th className="px-5 py-3">Material type</th>
-                            <th className="px-5 py-3">Length</th>
+                            <th className="px-5 py-3">Max length</th>
                             <th className="px-5 py-3">Total duration</th>
                             <th className="px-5 py-3">Total meters</th>
                             <th className="px-5 py-3">AV speed</th>
@@ -78,21 +87,14 @@ export const LineTable: FC<Props> = ({ lines, title }) => {
                                         type="string"
                                         value={rollLengths[line.id] ?? line.rollLength ?? ""}
                                         onChange={(e) =>
-                                            handleRollLengthChange(
-                                                line.id,
-                                                e.target.value,
-                                                processingTime,
-                                                valuePerRoll
-                                            )
+                                            handleRollLengthChange( line.id, e.target.value )
                                         }
                                         className="w-24 p-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                                         />
                                     </td>
                                     <td className="px-5 py-3">{processingTime.toFixed(3)}</td>
                                     <td className="px-5 py-3">{line.costPerMin.toFixed(3)}</td>
-                                    <td className="px-5 py-3 font-semibold text-blue-700">
-                                        {valuePerRoll.toFixed(3)}
-                                    </td>
+                                    <td className="px-5 py-3 font-semibold text-blue-700">{valuePerRoll.toFixed(3)}</td>
                                 </tr>
                             );
                         })}

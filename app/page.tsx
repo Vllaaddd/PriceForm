@@ -10,7 +10,7 @@ export default function Page() {
       name: 'Consumer',
       materials: [
         {
-          name: 'Aluminium',
+          name: 'Alu',
           width: [288, 290, 294, 295, 298, 300, 327, 330],
           thickness: [8, 9, 10, 10.3, 10.5, 10.7, 11, 11.2, 11.3, 11.5, 12, 12.3, 12.5, 13, 13.2, 13.3, 13.5, 14, 14.5, 15, 15.5, 17, 17.5, 18, 20],
           color: ['Silver'],
@@ -43,7 +43,7 @@ export default function Page() {
           width: [300, 330, 360, 380, 430, 450],
           color: ['White', 'Brown'],
           otherProperties: ['Printed'],
-          density: [35, 37, 40, 41],
+          density: [35, 37, 39, 41],
           typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
           id: 4,
         }
@@ -53,7 +53,7 @@ export default function Page() {
       name: 'Catering',
       materials: [
         {
-          name: 'Aluminium',
+          name: 'Alu',
           width: [288, 290, 294, 295, 298, 300, 440, 450],
           thickness: [8, 9, 10, 10.3, 10.5, 10.7, 11, 11.2, 11.3, 11.5, 12, 12.3, 12.5, 13, 13.2, 13.3, 13.5, 14, 14,2, 14,3, 14.5, 15, 15.5, 17, 17.2, 17.5, 18, 20, 35, 45],
           color: ['Silver'],
@@ -76,15 +76,6 @@ export default function Page() {
           otherProperties: ['Factor 1', 'Factor 2', 'Factor 3'],
           id: 3,
         },
-        {
-          name: 'Baking paper',
-          width: [380],
-          color: ['White', 'Brown'],
-          otherProperties: ['Printed'],
-          density: [35, 37, 40, 41],
-          typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
-          id: 4,
-        }
       ]
     },
 

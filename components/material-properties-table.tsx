@@ -4,7 +4,7 @@ import { FC, useState } from "react";
 type Material = {
     id: number;
     material: string;
-    density: string;
+    density?: string;
     costPerKg: string;
 }
 
@@ -53,7 +53,11 @@ export const MaterialPropertiesTable: FC<Props> = ({ materials, title }) => {
                                 <td className="px-5 py-3 text-center font-medium text-gray-900">
                                     {material.material}
                                 </td>
-                                <td className="px-5 py-3 text-center">{material.density}</td>
+                                {material.density ? (
+                                    <td className="px-5 py-3 text-center">{material.density}</td>
+                                ) : (
+                                    <td className="px-5 py-3 text-center">-</td>
+                                )}
                                 <td className="px-5 py-3 text-center">
                                     <input
                                         type="number"

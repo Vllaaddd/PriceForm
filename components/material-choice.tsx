@@ -38,9 +38,9 @@ type CalculationForm = {
   remarks?: string | null
   density?: number | null
   typeOfProduct?: string | null
-  rollLength?: number | null
-  sheetWidth?: number | null
-  sheetLength?: number | null
+  rollLength?: string | null
+  sheetWidth?: string | null
+  sheetLength?: string | null
   sheetQuantity?: number | null
 }
 
@@ -100,10 +100,96 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
+  const fetchLine = async (material: string, materialLength: number, lineType: string) => {
+    const line = await Api.lines.find({
+      material: material,
+      lineType: lineType,
+      length: materialLength || 0
+    });
+
+
+    const { id } = line
+
+    const processingTime = Number(materialLength) / line.avSpeed;
+    const newValuePerRoll = processingTime * line.costPerMin;
+    await Api.lines.update(id, { rollLength: String(materialLength), processingTime, valuePerRoll: newValuePerRoll } )
+    
+    const updatedLine = await Api.lines.getOne(String(id))
+    return Number(updatedLine.valuePerRoll)
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-    await Api.calculations.createCalculation(cleanForm)
+    let materialCost = 0
+    let WVPerRoll = 0
+    let materialName = undefined
+
+    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct,  } = form
+    if(material === 'Baking paper'){
+      materialName = 'BP'
+    }else{
+      materialName = material
+    }
+
+    const { density, costPerKg } = await Api.properties.getOne(materialName || "")
+
+    if (materialWidth && materialThickness && materialLength && density && material !== 'BP') {
+      const materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
+      materialCost = materialWeight * Number(costPerKg)
+    }else{
+      if(typeOfProduct !== 'Consumer sheets' && materialWidth && rollLength && form.density){
+        const square = (materialWidth / 1000) * Number(rollLength)
+        const materialWeight = square * form.density
+        materialCost = (materialWeight / 1000) * Number(costPerKg)
+      }else if (typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity && form.density) {
+        const square = Number(sheetWidth) * Number(sheetLength) * sheetQuantity
+        const materialWeight = square * form.density
+        materialCost = (materialWeight / 1000) * Number(costPerKg)
+      }
+    }
+
+    if(roll === 'Consumer' && materialWidth && materialWidth <= 350){
+      if (material === 'PE' || material === 'PVC') {
+        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Main lines');
+      } else {
+        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Main lines');
+      }
+    }else if(roll === 'Consumer' && materialWidth && materialWidth > 350){
+      if (material === 'PE' || material === 'PVC') {
+        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Speed 6,4');
+      } else {
+        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Speed 6,4');
+      }
+    }else if(roll === 'Catering'){
+      if (material === 'PE' || material === 'PVC') {
+        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Speed 4,5 and 4,6');
+      } else {
+        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Speed 4,5 and 4,6');
+      }
+    }else if(roll === 'BP' && typeOfProduct !== 'Consumer sheets' && rollLength && Number(rollLength) <=52){
+      WVPerRoll = await fetchLine('BP', Number(rollLength) || 0, 'BP lines')
+    }else if(roll === 'BP' && typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity){
+
+      let length = 0;
+
+      if(sheetLength > sheetWidth){
+        length = Number(sheetLength) * sheetQuantity
+      }else{
+        length = Number(sheetWidth) * sheetQuantity
+      }
+
+      if(length <= 52){
+        WVPerRoll = await fetchLine('BP', length, 'BP lines')
+      }else{
+        WVPerRoll = 0
+      }
+
+    }else if(roll === 'BP' && rollLength && Number(rollLength) > 52){
+      WVPerRoll = 0
+    }
+
+    await Api.calculations.createCalculation({ ...cleanForm, materialCost, WVPerRoll })
     sendEmail(email || "", cleanForm)
     setForm({})
     toast.success('Calculation created!')
@@ -112,12 +198,24 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const handleSubmitAndEmail = async (e: FormEvent) => {
     e.preventDefault()
     const formEl = e.target as HTMLFormElement
+
     if (!formEl.closest("form")?.checkValidity()) {
       formEl.closest("form")?.reportValidity()
       return
     }
+
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-    const created = await Api.calculations.createCalculation(cleanForm)
+    let materialCost = 0
+
+    const { material, materialWidth, materialThickness, materialLength } = form
+    const { density, costPerKg } = await Api.properties.getOne(material || "")
+    if (materialWidth && materialThickness && materialLength && density) {
+      const materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
+      materialCost = materialWeight * Number(costPerKg)
+    }
+    
+    const created = await Api.calculations.createCalculation({ ...cleanForm, materialCost })
+
     setNewCalculation(created)
     setIsModalOpen(true)
     setForm({})
@@ -251,30 +349,24 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
                   </option>
                 ))}
               </SelectField>
-
-              {/* Roll length */}
-              <InputField
-                label="Roll length"
-                type="number" value={form.rollLength || ""}
-                onChange={(e) => handleChange("rollLength", Number(e.target.value))}
-                disabled={form.typeOfProduct === 'Consumer sheets'}
-              />
-
+            </>
+          )}
+          { (form.typeOfProduct === 'Consumer sheets' && form.material === 'Baking paper') && (
+            <>
               {/* Sheet width */}
               <InputField
-                label="Sheet width" type="number"
+                label="Sheet width(m)"
+                type="string"
                 value={form.sheetWidth || ""}
-                onChange={(e) => handleChange("sheetWidth", Number(e.target.value))}
-                disabled={form.typeOfProduct !== 'Consumer sheets'}
+                onChange={(e) => handleChange("sheetWidth", e.target.value)}
               />
 
               {/* Sheet length */}
               <InputField
-                label="Sheet length"
-                type="number"
+                label="Sheet length(m)"
+                type="string"
                 value={form.sheetLength || ""}
-                onChange={(e) => handleChange("sheetLength", Number(e.target.value))}
-                disabled={form.typeOfProduct !== 'Consumer sheets'}
+                onChange={(e) => handleChange("sheetLength", e.target.value)}
               />
 
               {/* Sheet quantity */}
@@ -284,7 +376,16 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
                 max={30}
                 value={form.sheetQuantity || ""}
                 onChange={(e) => handleChange("sheetQuantity", Number(e.target.value))}
-                disabled={form.typeOfProduct !== 'Consumer sheets'}
+              />
+            </>
+          )}
+          {(form.typeOfProduct === 'Consumer roll' || form.typeOfProduct === 'Catering roll'  && form.material === 'Baking paper') && (
+            <>
+              {/* Roll length */}
+              <InputField
+                label="Roll length(m)"
+                type="string" value={form.rollLength || ""}
+                onChange={(e) => handleChange("rollLength", e.target.value)}
               />
             </>
           )}
@@ -346,7 +447,6 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             label="Skillet knife"
             value={form.skilletKnife || ""}
             onChange={(e) => handleChange("skilletKnife", e.target.value)}
-            disabled={selectedMaterial?.name === 'Baking paper' && form.typeOfProduct === 'Consumer sheets'}
           >
             <option value="">-- choose skillet knife --</option>
             {(

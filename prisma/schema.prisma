@@ -15,7 +15,7 @@ model Calculation{
     roll String
     material String
     materialWidth Int
-    materialThickness Int?
+    materialThickness Float?
     materialLength Int?
     materialColor String
     otherProperties String
@@ -39,10 +39,12 @@ model Calculation{
     remarks String?
     density Int?
     typeOfProduct String?
-    rollLength Int?
-    sheetWidth Int?
-    sheetLength Int?
+    rollLength String?
+    sheetWidth String?
+    sheetLength String?
     sheetQuantity Int?
+    materialCost Float
+    WVPerRoll Float
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -70,7 +72,7 @@ model MaterialProperty{
     id Int @id @default(autoincrement())
 
     material String
-    density String
+    density String?
     costPerKg String
 
     createdAt DateTime @default(now())

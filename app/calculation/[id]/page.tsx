@@ -56,15 +56,15 @@ export default function Home() {
                   <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
                 </>
               )}
-              {calculation.typeOfProduct === 'Consumer sheets' ? (
+              {(calculation.typeOfProduct === 'Consumer sheets' && calculation.material === 'Baking paper') ? (
                 <>
-                  <Info label="Sheet width" value={`${calculation.sheetWidth}`} />
-                  <Info label="Sheet length" value={`${calculation.sheetLength}`} />
+                  <Info label="Sheet width(m)" value={`${calculation.sheetWidth}`} />
+                  <Info label="Sheet length(m)" value={`${calculation.sheetLength}`} />
                   <Info label="Sheet quantity" value={`${calculation.sheetQuantity}`} />
                 </>
               ) : calculation.typeOfProduct === 'Consumer roll' ? (
                 <>
-                  <Info label="Roll length" value={`${calculation.rollLength}`} />
+                  <Info label="Roll length(m)" value={`${calculation.rollLength}`} />
                 </>
               ): null}
               <Info label="Other properties" value={calculation.otherProperties} />
@@ -89,6 +89,8 @@ export default function Home() {
               <Info label="Period" value={calculation.period} />
               <Info label="Delivery conditions" value={calculation.deliveryConditions} />
               <Info label="Delivery address" value={calculation.deliveryAddress} />
+              <Info label="Material cost per roll" value={calculation.materialCost.toFixed(2)} />
+              <Info label="WV per roll" value={calculation.WVPerRoll.toFixed(3)} />
               { calculation.referenceArticle && (
                 <Info label="Reference article" value={calculation.referenceArticle} />
               )}
