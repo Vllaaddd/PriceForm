@@ -118,14 +118,12 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     return Number(updatedLine.valuePerRoll)
   }
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    const { id, createdAt, updatedAt, ...cleanForm } = form as any
+  const createForm = async (form: CalculationForm) => {
     let materialCost = 0
     let WVPerRoll = 0
     let materialName = undefined
 
-    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct,  } = form
+    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletFormat, skilletKnife, skilletDensity, totalOrderInRolls  } = form
     if(material === 'Baking paper'){
       materialName = 'BP'
     }else{
@@ -189,7 +187,44 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       WVPerRoll = 0
     }
 
-    await Api.calculations.createCalculation({ ...cleanForm, materialCost, WVPerRoll })
+    const skillet = await Api.skillets.find({
+      format: Number(skilletFormat),
+      knife: skilletKnife || '',
+      density: Number(skilletDensity)
+    })
+
+    let skilletName = '';
+    let skilletPrice = 0;
+
+    if(totalOrderInRolls && totalOrderInRolls > 30000 && totalOrderInRolls <= 200000){
+      skilletName = skillet.smallDescription;
+      skilletPrice = skillet.smallPrice
+    }else if(totalOrderInRolls && totalOrderInRolls > 200000 && totalOrderInRolls <= 500000){
+      skilletName = skillet.mediumDescription;
+      skilletPrice = skillet.mediumPrice
+    }else if(totalOrderInRolls && totalOrderInRolls > 500000 && totalOrderInRolls <= 1000000){
+      skilletName = skillet.largeDescription;
+      skilletPrice = skillet.largePrice
+    }
+
+    const core = await Api.cores.find({ length: materialWidth || 0 })
+    
+    let coreName = `Hülse ${core.length} x ${core.width} x ${core.thickness} mm`
+    const corePrice = core.price
+    if(core.type === 'No suitable core found'){
+      coreName = 'No suitable core found'
+    }
+
+    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName }
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    const { id, createdAt, updatedAt, ...cleanForm } = form as any
+
+    const props = await createForm(cleanForm)
+
+    await Api.calculations.createCalculation({ ...cleanForm, ...props })
     sendEmail(email || "", cleanForm)
     setForm({})
     toast.success('Calculation created!')
@@ -205,16 +240,10 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }
 
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-    let materialCost = 0
 
-    const { material, materialWidth, materialThickness, materialLength } = form
-    const { density, costPerKg } = await Api.properties.getOne(material || "")
-    if (materialWidth && materialThickness && materialLength && density) {
-      const materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
-      materialCost = materialWeight * Number(costPerKg)
-    }
+    const props = await createForm(cleanForm)
     
-    const created = await Api.calculations.createCalculation({ ...cleanForm, materialCost })
+    const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
 
     setNewCalculation(created)
     setIsModalOpen(true)

@@ -3,4 +3,6 @@ export enum ApiRoutes{
     EMAILS = 'emails',
     LINES = 'lines',
     PROPERTIES = 'material-properties',
+    SKILLETS = 'skillets',
+    CORES = 'cores',
 }

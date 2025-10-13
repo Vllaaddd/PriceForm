@@ -8,32 +8,39 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 export const Header: FC = () => {
-
-    const pathname = usePathname()
+    const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-  if (!mounted) return null;
+    if (!mounted) return null;
 
-    return(
-        <header className="bg-white p-4 flex items-center">
-            <Image src='/fora-logo.png' alt="Logo" width={50} height={20} className="md:w-24" />
+    return (
+        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-gray-200 shadow-sm">
             <Container>
-                <div className="flex items-center gap-5 md:gap-10 justify-center">
-                    <Link href={'/'}>
-                        <Title active={pathname == '/' ? true : false} title={'Create calculation'} />
+                <div className="flex items-center justify-center px-4 md:px-8 py-3 relative">
+                    <Link href="/" className="absolute left-4 md:left-8 hover:opacity-80 transition-opacity">
+                        <Image
+                            src="/fora-logo.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                            className="object-contain md:w-12 md:h-12"
+                        />
                     </Link>
-                    <Link href={'/all-calculations'}>
-                        <Title active={pathname == '/all-calculations' ? true : false} title={'All calculations'} />
-                    </Link>
-                    <Link href={'/admin'}>
-                        <Title active={pathname == '/admin' ? true : false} title={'Admin dashboard'} />
-                    </Link>
+
+                    <nav className="flex items-center gap-6 md:gap-10">
+                        <Link href="/">
+                            <Title active={pathname === '/'} title="Create calculation" />
+                        </Link>
+                        <Link href="/all-calculations">
+                            <Title active={pathname === '/all-calculations'} title="All calculations" />
+                        </Link>
+                    </nav>
                 </div>
             </Container>
         </header>
-    )
-}
+    );
+};

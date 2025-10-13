@@ -73,7 +73,7 @@ export default function Home() {
                 <Info label="Skillet knife" value={calculation.skilletKnife} />
               )}
               {calculation.roll === 'Catering' ?
-                <Info label="Lochstanzlinge" value={calculation.lochstanzlinge ?? ""} />
+                <Info label="Lochstanzlinge" value={calculation.lochstanzlinge || ""} />
                : (
                 <Info label="Skillet density" value={`${calculation.skilletDensity} g/m²`} />
               )}
@@ -96,6 +96,14 @@ export default function Home() {
               )}
               { calculation.remarks && ( 
                 <Info label="Remarks" value={calculation.remarks} />
+              )}
+              {calculation.material !== 'Baking paper' && (
+                <>
+                  <Info label="Skillet" value={calculation.skillet || ''} />
+                  <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
+                  <Info label="Core" value={calculation.core || ''} />
+                  <Info label="Core price per roll" value={calculation.corePrice?.toFixed(3) || ''} />
+                </>
               )}
             </div>
 

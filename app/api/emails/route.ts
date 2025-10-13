@@ -32,9 +32,9 @@ export async function POST(req: NextRequest) {
           { label: "Sheet width", value: calculation.sheetWidth },
           { label: "Sheet length", value: calculation.sheetLength },
           { label: "Sheet quantity", value: calculation.sheetQuantity },
-        ] : [
+        ] : (calculation.typeOfProduct !== 'Consumer sheets' && calculation.material === 'Baking paper') ? [
           { label: "Roll length", value: `${calculation.rollLength} m` },
-        ]),
+        ] : []),
         { label: "Other properties", value: calculation.otherProperties },
         { label: "Skillet format", value: calculation.skilletFormat },
         { label: "Skillet knife", value: calculation.skilletKnife },
@@ -53,6 +53,14 @@ export async function POST(req: NextRequest) {
         { label: "Delivery address", value: calculation.deliveryAddress },
         { label: "Reference article", value: calculation.referenceArticle },
         { label: "Remarks", value: calculation.remarks },
+        { label: "Material cost per roll", value: calculation.materialCost.toFixed(2) },
+        { label: "W&V per roll", value: calculation.WVPerRoll.toFixed(3) },
+        { label: "Skillet", value: calculation.skillet },
+        { label: "Skillet price per roll", value: calculation.skilletPrice.toFixed(3) },
+        ...(calculation.material !== 'Baking paper' ? [
+          { label: "Core", value: `${calculation.core} mm` },
+          { label: "Core price per roll", value: `${calculation.corePrice.toFixed(3)} mm` },
+        ] : []),
     ]
 
     const rows = fields

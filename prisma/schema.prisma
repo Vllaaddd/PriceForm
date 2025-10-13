@@ -45,6 +45,10 @@ model Calculation{
     sheetQuantity Int?
     materialCost Float
     WVPerRoll Float
+    core String?
+    corePrice Float?
+    skillet String?
+    skilletPrice Float?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -74,6 +78,36 @@ model MaterialProperty{
     material String
     density String?
     costPerKg String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Skillet{
+    id Int @id @default(autoincrement())
+
+    format Int
+    knife String
+    density Int
+    smallPrice Float
+    mediumPrice Float
+    largePrice Float
+    smallDescription String
+    mediumDescription String
+    largeDescription String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Core{
+    id Int @id @default(autoincrement())
+
+    length Int
+    width Float
+    thickness Float
+    type String?
+    price Float
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

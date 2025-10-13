@@ -1,5 +1,4 @@
 'use client';
-import { AdminDashboard } from '@/components/admin-dashboard';
 import { InputField } from '@/components/input-field';
 import { useState } from 'react';
 
@@ -30,6 +29,4 @@ export default function AdminPage() {
         </div>
     );
   }
-
-  return <AdminDashboard />;
 }
