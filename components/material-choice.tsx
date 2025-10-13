@@ -7,6 +7,7 @@ import { Api } from "@/services/api-client"
 import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
+import Swal from "sweetalert2";
 
 type CalculationForm = {
   creator?: string | null
@@ -224,10 +225,59 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     const props = await createForm(cleanForm)
 
-    await Api.calculations.createCalculation({ ...cleanForm, ...props })
-    sendEmail(email || "", cleanForm)
-    setForm({})
-    toast.success('Calculation created!')
+    if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
+      Swal.fire({
+        title: "This type of skillet isn't available and no suitable core found. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          sendEmail(email || "", cleanForm)
+          setForm({})
+          toast.success('Calculation created!')
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }else if(props.core === "No suitable core found"){
+      Swal.fire({
+        title: "No suitable core found. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          sendEmail(email || "", cleanForm)
+          setForm({})
+          toast.success('Calculation created!')
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }else if(props.skillet === "This type of skillet isn't available"){
+      Swal.fire({
+        title: "This type of skillet isn't available. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          sendEmail(email || "", cleanForm)
+          setForm({})
+          toast.success('Calculation created!')
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }
+    
   }
 
   const handleSubmitAndEmail = async (e: FormEvent) => {
@@ -242,12 +292,59 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
 
     const props = await createForm(cleanForm)
-    
-    const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
 
-    setNewCalculation(created)
-    setIsModalOpen(true)
-    setForm({})
+    if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
+      Swal.fire({
+        title: "This type of skillet isn't available and no suitable core found. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          setNewCalculation(created)
+          setIsModalOpen(true)
+          setForm({})
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }else if(props.core === "No suitable core found"){
+      Swal.fire({
+        title: "No suitable core found. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          setNewCalculation(created)
+          setIsModalOpen(true)
+          setForm({})
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }else if(props.skillet === "This type of skillet isn't available"){
+      Swal.fire({
+        title: "This type of skillet isn't available. Do you want to create calculation?",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonColor: 'red'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
+          setNewCalculation(created)
+          setIsModalOpen(true)
+          setForm({})
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+          return
+        }
+      });
+    }
   }
     
   useEffect(() => {
