@@ -208,7 +208,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       skilletPrice = skillet.largePrice
     }
 
-    const core = await Api.cores.find({ length: materialWidth || 0 })
+    const core = await Api.cores.find({ length: materialWidth || 0, type: roll || '' })
     
     let coreName = `Hülse ${core.length} x ${core.width} x ${core.thickness} mm`
     let corePrice = core.price;

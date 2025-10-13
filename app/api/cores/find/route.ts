@@ -4,9 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
+        const type = searchParams.get("type");
         const length = Number(searchParams.get("length")) + 8;
 
         const filters: any = {};
+        if (type) filters.type = type;
         if (length) filters.length = { gte: length };
 
         const bestCore = await prisma.core.findFirst({

@@ -12,9 +12,11 @@ export const getAll = async (): Promise<Core[]> => {
 
 export const find = async (filters: {
     length: number;
+    type: string;
 }): Promise<Core> => {
     const params = new URLSearchParams();
     params.append("length", String(filters.length));
+    params.append("type", String(filters.type));
 
     const { data } = await axiosInstance.get<Core>(`${ApiRoutes.CORES}/find?${params.toString()}`);
     return data;
