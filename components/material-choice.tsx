@@ -227,8 +227,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
-
+    
     const props = await createForm(cleanForm)
 
     const swalFire = (msg: string) => {
@@ -257,6 +258,11 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }else if(props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available.")
     }
+
+    await Api.calculations.createCalculation({ ...cleanForm, ...props })
+    sendEmail(email || "", cleanForm)
+    setForm({})
+    toast.success('Calculation created!')
     
   }
 
@@ -299,6 +305,11 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }else if(props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available.")
     }
+
+    const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
+    setNewCalculation(created)
+    setIsModalOpen(true)
+    setForm({})
   }
     
   useEffect(() => {
