@@ -5,4 +5,5 @@ export enum ApiRoutes{
     PROPERTIES = 'material-properties',
     SKILLETS = 'skillets',
     CORES = 'cores',
+    PERIODS = 'periods',
 }

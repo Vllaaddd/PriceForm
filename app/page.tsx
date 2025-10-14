@@ -78,8 +78,7 @@ export default function Page() {
         },
       ]
     },
-
-]
+  ]
 
   const skillet = {
     format: ['39', '45', '50', '52', '45', '60', '90', 'Without skillet/lose', '90/Minibox'],

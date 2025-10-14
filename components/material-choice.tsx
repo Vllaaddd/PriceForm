@@ -8,6 +8,7 @@ import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import { Period } from "@prisma/client";
 
 type CalculationForm = {
   creator?: string | null
@@ -92,10 +93,24 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const [form, setForm] = useState<CalculationForm>(initialCalculation || {})
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
+  const [periods, setPeriods] = useState<Period[]>()
   const email = 'vladikhoncharuk@gmail.com'
 
   const selectedRoll = rolls.find(r => r.name === form.roll)
-  const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)  
+  const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)
+  
+  useEffect(() => {
+
+    const fetchPeriods = async () => {
+
+      const periods = await Api.periods.getAll()
+      setPeriods(periods)
+
+    }
+
+    fetchPeriods()
+
+  }, [])
 
   const handleChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -124,14 +139,17 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let WVPerRoll = 0
     let materialName = undefined
 
-    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletFormat, skilletKnife, skilletDensity, totalOrderInRolls  } = form
+    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletFormat, skilletKnife, skilletDensity, totalOrderInRolls, period  } = form
     if(material === 'Baking paper'){
       materialName = 'BP'
     }else{
       materialName = material
     }
 
-    const { density, costPerKg } = await Api.properties.getOne(materialName || "")
+    const { density, costPerKg } = await Api.periods.find({
+      period: period || "",
+      material: material || "",
+    })
 
     if (materialWidth && materialThickness && materialLength && density && material !== 'BP') {
       const materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
@@ -647,7 +665,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
           )}
 
           {/* Період */}
-          <InputField label="Period" type="string" value={form.period || ""} onChange={(e) => handleChange("period", e.target.value)} />
+          <SelectField label="Period" value={form.period || ""} onChange={(e) => handleChange("period", e.target.value)}>
+            <option value="">-- choose delivery conditions --</option>
+            {periods?.map((period, i) => (
+              <option key={i} value={period.period}>
+                {period.period}
+              </option>
+            ))}
+          </SelectField>
 
           {/* Умови доставки */}
           <SelectField label="Delivery conditions" value={form.deliveryConditions || ""} onChange={(e) => handleChange("deliveryConditions", e.target.value)}>
