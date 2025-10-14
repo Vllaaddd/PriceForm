@@ -98,6 +98,7 @@ model Skillet{
     smallDescription String
     mediumDescription String
     largeDescription String
+    article String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -111,6 +112,7 @@ model Core{
     thickness Float
     type String?
     price Float
+    article String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
