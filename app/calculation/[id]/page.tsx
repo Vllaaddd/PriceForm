@@ -99,12 +99,12 @@ export default function Home() {
               )}
               {calculation.material !== 'Baking paper' && (
                 <>
-                  <Info label="Skillet" value={calculation.skillet || ''} />
-                  <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
                   <Info label="Core" value={calculation.core || ''} />
                   <Info label="Core price per roll" value={calculation.corePrice?.toFixed(3) || ''} />
                 </>
               )}
+              <Info label="Skillet" value={calculation.skillet || ''} />
+              <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
             </div>
 
             <div className="flex justify-center gap-6 mt-8">

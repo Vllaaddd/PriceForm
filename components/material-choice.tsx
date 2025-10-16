@@ -94,7 +94,24 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
   const [periods, setPeriods] = useState<Period[]>()
-  const email = 'vladikhoncharuk@gmail.com'
+  const [emails, setEmails] = useState<string[]>()
+
+  useEffect(() => {
+
+    const fetchRecipients = async () => {
+
+      try {
+        const recipients = await Api.recipients.getAll()
+        setEmails(recipients.map(r => r.email))
+      } catch (error) {
+        console.error(error)
+      }
+
+    }
+
+    fetchRecipients()
+
+  }, [])
 
   const selectedRoll = rolls.find(r => r.name === form.roll)
   const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)
@@ -148,7 +165,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     const { density, costPerKg } = await Api.periods.find({
       period: period || "",
-      material: material || "",
+      material: materialName || "",
     })
 
     if (materialWidth && materialThickness && materialLength && density && material !== 'BP') {
@@ -259,7 +276,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       }).then( async (result) => {
         if (result.isConfirmed) {
           await Api.calculations.createCalculation({ ...cleanForm, ...props })
-          sendEmail(email || "", cleanForm)
+          emails?.map(email => {
+            sendEmail(email, cleanForm)
+          })
           setForm({})
           toast.success('Calculation created!')
         } else if (result.isDenied) {
@@ -271,14 +290,19 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available and no suitable core found.")
+      return
     }else if(props.core === "No suitable core found"){
       swalFire("No suitable core found.")
+      return
     }else if(props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available.")
+      return
     }
 
     await Api.calculations.createCalculation({ ...cleanForm, ...props })
-    sendEmail(email || "", cleanForm)
+    emails?.map(email => {
+      sendEmail(email, cleanForm)
+    })
     setForm({})
     toast.success('Calculation created!')
     

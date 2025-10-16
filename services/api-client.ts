@@ -4,6 +4,7 @@ import * as properties from './material-properties'
 import * as skillets from './skillets'
 import * as cores from './cores'
 import * as periods from './periods'
+import * as recipients from './recipients'
 
 export const Api = {
     calculations,
@@ -11,5 +12,6 @@ export const Api = {
     properties,
     skillets,
     cores,
-    periods
+    periods,
+    recipients
 }
