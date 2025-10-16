@@ -95,6 +95,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const [newCalculation, setNewCalculation] = useState<CalculationForm | null>(null)
   const [periods, setPeriods] = useState<Period[]>()
   const [emails, setEmails] = useState<string[]>()
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
 
@@ -264,15 +265,16 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     e.preventDefault()
     
     const { id, createdAt, updatedAt, ...cleanForm } = form as any
+    setIsLoading(true)
     
     const props = await createForm(cleanForm)
 
     const swalFire = (msg: string) => {
       Swal.fire({
         title: `${msg} Do you want to create calculation?`,
-        showCancelButton: true,
+        showDenyButton: true,
+        denyButtonColor: 'red',
         confirmButtonText: "Save",
-        cancelButtonColor: 'red'
       }).then( async (result) => {
         if (result.isConfirmed) {
           await Api.calculations.createCalculation({ ...cleanForm, ...props })
@@ -280,9 +282,10 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             sendEmail(email, cleanForm)
           })
           setForm({})
+          setIsLoading(false)
           toast.success('Calculation created!')
         } else if (result.isDenied) {
-          Swal.fire("Changes are not saved", "", "info");
+          setIsLoading(false)
           return
         }
       });
@@ -304,6 +307,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       sendEmail(email, cleanForm)
     })
     setForm({})
+    setIsLoading(false)
     toast.success('Calculation created!')
     
   }
@@ -311,6 +315,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const handleSubmitAndEmail = async (e: FormEvent) => {
     e.preventDefault()
     const formEl = e.target as HTMLFormElement
+    setIsLoading(true)
 
     if (!formEl.closest("form")?.checkValidity()) {
       formEl.closest("form")?.reportValidity()
@@ -324,17 +329,19 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const swalFire = (msg: string) => {
       Swal.fire({
         title: `${msg} Do you want to create calculation?`,
-        showCancelButton: true,
+        showDenyButton: true,
+        denyButtonColor: 'red',
         confirmButtonText: "Save",
-        cancelButtonColor: 'red'
       }).then( async (result) => {
         if (result.isConfirmed) {
           const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
           setNewCalculation(created)
           setIsModalOpen(true)
           setForm({})
+          setIsLoading(false)
         } else if (result.isDenied) {
-          Swal.fire("Changes are not saved", "", "info");
+          setIsModalOpen(false)
+          setIsLoading(false)
           return
         }
       });
@@ -342,16 +349,20 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available and no suitable core found.")
+      return
     }else if(props.core === "No suitable core found"){
       swalFire("No suitable core found.")
+      return
     }else if(props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available.")
+      return
     }
 
     const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
     setNewCalculation(created)
     setIsModalOpen(true)
     setForm({})
+    setIsLoading(false)
   }
     
   useEffect(() => {
@@ -727,14 +738,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
         <div className="flex justify-center gap-5">
           <button type="submit" className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
-            Create calculation
+            {isLoading ? 'Processing...' : 'Create calculation'}
           </button>
           <button 
             type="button" 
             className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
             onClick={handleSubmitAndEmail}
           >
-            Create calculation and send to email
+            {isLoading ? 'Processing...' : 'Create calculation and send to email'}
           </button>
         </div>
       </form>
