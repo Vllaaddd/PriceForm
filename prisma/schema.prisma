@@ -49,6 +49,8 @@ model Calculation{
     corePrice Float?
     skillet String?
     skilletPrice Float?
+    totalPricePerRoll Float?
+    totalPrice Float?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

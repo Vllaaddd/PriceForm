@@ -6,13 +6,7 @@ import { XIcon } from "@/icons/XIcon"
 import { Api } from "@/services/api-client"
 import { Calculation } from "@prisma/client"
 import Link from "next/link"
-import { useEffect, useState, useMemo } from "react"
-
-interface Filters {
-    material: string | null;
-    boxType: string | null;
-    minRolls: number | '';
-}
+import { useEffect, useState } from "react"
 
 export default function Home(){
 
@@ -22,6 +16,7 @@ export default function Home(){
     const [filterFields, setFilterFields] = useState<Record<string, string[]>>({})
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filteredCalculations, setFilteredCalculations] = useState<Calculation[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const hasActiveFilters = Object.values(filters).some(f => f && f !== "All");
 
@@ -67,38 +62,64 @@ export default function Home(){
         if (calculations.length === 0) return;
 
         const filtered = calculations.filter((calc) => {
-            return Object.entries(filters).every(([key, value]) => {
+            const matchesFilters = Object.entries(filters).every(([key, value]) => {
                 if (!value || value === "All") return true;
                 return String(calc[key as keyof Calculation]) === value;
             });
+
+            const matchesSearch = calc.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return matchesFilters && matchesSearch;
         });
 
         setFilteredCalculations(filtered);
-    }, [filters, calculations]);
+    }, [filters, calculations, searchQuery]);
 
     return(
         <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-8 mb-8 bg-white p-4 sm:p-6 rounded-xl shadow-md">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center sm:text-left">
-                        {hasActiveFilters ? (
-                            <>
-                                Filtered Calculations
-                                <span className="text-blue-600"> ({filteredCalculations.length})</span>
-                            </>
-                        ) : (
-                            <>
-                                All Calculations
-                                <span className="text-blue-600"> ({calculations.length})</span>
-                            </>
-                        )}
-                    </h1>
+                    <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center sm:text-left">
+                            {hasActiveFilters ? (
+                                <>
+                                    Filtered Calculations
+                                    <span className="text-blue-600"> ({filteredCalculations.length})</span>
+                                </>
+                            ) : (
+                                <>
+                                    All Calculations
+                                    <span className="text-blue-600"> ({calculations.length})</span>
+                                </>
+                            )}
+                        </h1>
+
+                        <div className="w-full sm:w-72 relative">
+                            <input
+                                type="text"
+                                placeholder="Search by title..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2.5 text-gray-800 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm sm:text-base"
+                            />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+                            </svg>
+                        </div>
+                    </div>
 
                     <div className="flex items-center justify-center sm:justify-end gap-3">
                         <button
                             onClick={() => setIsFilterOpen(true)}
-                            className={`flex items-center justify-center gap-2 px-4 py-2 text-sm sm:text-base rounded-lg font-semibold transition duration-200 shadow-md bg-blue-500 text-white hover:bg-blue-600`}
+                            className="flex items-center justify-center gap-2 px-4 py-2 text-sm sm:text-base rounded-lg font-semibold transition duration-200 shadow-md bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
                         >
                             <FilterIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             {Object.values(filters).some(f => f !== null && f !== '')
@@ -109,7 +130,10 @@ export default function Home(){
                         <div className="flex items-center space-x-2 p-1 bg-gray-200 rounded-xl">
                             <button
                                 onClick={() => setViewVariant('grid')}
-                                className={`p-2 rounded-lg transition-colors ${viewVariant === 'grid' ? 'bg-white shadow text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${viewVariant === 'grid'
+                                    ? 'bg-white shadow text-blue-600'
+                                    : 'text-gray-600 hover:text-blue-600'}`
+                                }
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z" />
@@ -117,7 +141,10 @@ export default function Home(){
                             </button>
                             <button
                                 onClick={() => setViewVariant('table')}
-                                className={`p-2 rounded-lg transition-colors ${viewVariant === 'table' ? 'bg-white shadow text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${viewVariant === 'table'
+                                    ? 'bg-white shadow text-blue-600'
+                                    : 'text-gray-600 hover:text-blue-600'}`
+                                }
                                 aria-label="Switch to Table View"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
@@ -127,8 +154,6 @@ export default function Home(){
                         </div>
                     </div>
                 </div>
-
-                
 
                 {filteredCalculations.length === 0 && (
                     <div className="p-10 bg-white rounded-xl shadow-md">

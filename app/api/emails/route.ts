@@ -61,6 +61,8 @@ export async function POST(req: NextRequest) {
           { label: "Core", value: `${calculation.core} mm` },
           { label: "Core price per roll", value: `${calculation.corePrice.toFixed(3)} mm` },
         ] : []),
+        { label: "Total price per roll", value: calculation.totalPricePerRoll.toFixed(3) },
+        { label: "Total price", value: calculation.totalPrice.toFixed(3) },
     ]
 
     const rows = fields

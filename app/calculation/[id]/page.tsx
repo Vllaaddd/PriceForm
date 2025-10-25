@@ -105,6 +105,8 @@ export default function Home() {
               )}
               <Info label="Skillet" value={calculation.skillet || ''} />
               <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
+              <Info label="Total price per roll" value={calculation.totalPricePerRoll?.toFixed(3) || ''} />
+              <Info label="Total price" value={calculation.totalPrice?.toFixed(3) || ''} />
             </div>
 
             <div className="flex justify-center gap-6 mt-8">
