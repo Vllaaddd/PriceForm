@@ -19,6 +19,9 @@ export default function Home(){
     const [searchQuery, setSearchQuery] = useState("");
 
     const hasActiveFilters = Object.values(filters).some(f => f && f !== "All");
+    const activeFilterCount = Object.values(filters).filter(
+        (v) => v && v !== "All"
+    ).length;
 
     useEffect(() => {
         async function fetchCalculations() {
@@ -119,12 +122,12 @@ export default function Home(){
                     <div className="flex items-center justify-center sm:justify-end gap-3">
                         <button
                             onClick={() => setIsFilterOpen(true)}
-                            className="flex items-center justify-center gap-2 px-4 py-2 text-sm sm:text-base rounded-lg font-semibold transition duration-200 shadow-md bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                            className="flex items-center justify-center gap-2 px-4 py-2 h-12 text-sm sm:text-base rounded-lg font-semibold transition duration-200 shadow-md bg-blue-500 text-white hover:bg-blue-600 w-[140px] cursor-pointer"
                         >
                             <FilterIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             {Object.values(filters).some(f => f !== null && f !== '')
-                                ? 'Filters ACTIVE'
-                                : 'Filter'}
+                                ? `Filters (${activeFilterCount})`
+                                : 'Filters'}
                         </button>
 
                         <div className="flex items-center space-x-2 p-1 bg-gray-200 rounded-xl">
