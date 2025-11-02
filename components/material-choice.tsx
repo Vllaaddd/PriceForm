@@ -256,7 +256,15 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }
 
     const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice)
-    const totalPrice = totalPricePerRoll * (totalOrderInRolls || 0)
+    let totalPrice = totalPricePerRoll * (totalOrderInRolls || 0);
+
+    if(totalOrderInRolls && totalOrderInRolls <= 30000){
+      totalPrice = totalPrice + (totalPrice / 100 * 7)
+    }else if(totalOrderInRolls && (totalOrderInRolls > 30000 && totalOrderInRolls <= 200000)){
+      totalPrice = totalPrice + (totalPrice / 100 * 5)
+    }else if(totalOrderInRolls && totalOrderInRolls > 200000){
+      totalPrice = totalPrice + (totalPrice / 100 * 3)
+    }
 
     return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, totalPricePerRoll, totalPrice }
   }

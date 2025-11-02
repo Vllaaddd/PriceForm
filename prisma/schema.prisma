@@ -97,9 +97,9 @@ model Skillet{
     smallPrice Float
     mediumPrice Float
     largePrice Float
-    smallDescription String
-    mediumDescription String
-    largeDescription String
+    smallDescription String?
+    mediumDescription String?
+    largeDescription String?
     article String
 
     createdAt DateTime @default(now())
