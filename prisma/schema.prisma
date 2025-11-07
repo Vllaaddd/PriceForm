@@ -88,22 +88,40 @@ model MaterialProperty{
     updatedAt DateTime @updatedAt
 }
 
-model Skillet{
+model Skillet {
     id Int @id @default(autoincrement())
-
+    article String
     format Int
     knife String
     density Int
-    smallPrice Float
-    mediumPrice Float
-    largePrice Float
-    smallDescription String?
-    mediumDescription String?
-    largeDescription String?
-    article String
+
+    tierPrices SkilletTierPrice[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model PriceTier {
+    id Int @id @default(autoincrement())
+    minQty Int
+    maxQty Int
+
+    skilletPrices SkilletTierPrice[]
+
+    @@unique([minQty, maxQty])
+}
+
+model SkilletTierPrice {
+    id Int @id @default(autoincrement())
+    skilletId Int
+    tierId Int
+    price Float
+
+    skillet Skillet @relation(fields: [skilletId], references: [id], onDelete: Cascade)
+    tier PriceTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+
+    @@unique([skilletId, tierId])
+    @@index([tierId])
 }
 
 model Core{

@@ -15,16 +15,14 @@ export async function GET(req: NextRequest) {
 
         const bestSkillet = await prisma.skillet.findFirst({
             where: filters,
+            include: {
+                tierPrices: { include: { tier: true } }
+            }
         });
 
         if (!bestSkillet) {
             return NextResponse.json({
-                "smallPrice":0,
-                "mediumPrice":0,
-                "largePrice":0,
-                "smallDescription":"This type of skillet isn't available",
-                "mediumDescription":"This type of skillet isn't available",
-                "largeDescription":"This type of skillet isn't available"
+                "article": "This type of skillet isn't available"
             }, { status: 200 });
         }
 

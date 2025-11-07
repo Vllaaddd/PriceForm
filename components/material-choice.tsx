@@ -9,6 +9,7 @@ import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import { Period } from "@prisma/client";
+import { SkilletWithPrices } from "@/prisma/types";
 
 type CalculationForm = {
   creator?: string | null
@@ -233,12 +234,10 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const skilletName = skillet.article;
     let skilletPrice = 0;
 
-    if(totalOrderInRolls && totalOrderInRolls > 30000 && totalOrderInRolls <= 200000){
-      skilletPrice = skillet.smallPrice
-    }else if(totalOrderInRolls && totalOrderInRolls > 200000 && totalOrderInRolls <= 500000){
-      skilletPrice = skillet.mediumPrice
-    }else if(totalOrderInRolls && totalOrderInRolls > 500000 && totalOrderInRolls <= 1000000){
-      skilletPrice = skillet.largePrice
+    if (skillet && totalOrderInRolls) {
+      const tierPrice = skillet?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
+
+      skilletPrice = tierPrice ? tierPrice.price : 0;
     }
 
     const core = await Api.cores.find({ length: materialWidth || 0, type: roll || '' })
@@ -282,7 +281,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         title: `${msg} Do you want to create calculation?`,
         showDenyButton: true,
         denyButtonColor: 'red',
-        confirmButtonText: "Save",
+        confirmButtonText: "Create",
       }).then( async (result) => {
         if (result.isConfirmed) {
           await Api.calculations.createCalculation({ ...cleanForm, ...props })
@@ -339,7 +338,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         title: `${msg} Do you want to create calculation?`,
         showDenyButton: true,
         denyButtonColor: 'red',
-        confirmButtonText: "Save",
+        confirmButtonText: "Create",
       }).then( async (result) => {
         if (result.isConfirmed) {
           const created = await Api.calculations.createCalculation({ ...cleanForm, ...props })
