@@ -87,7 +87,7 @@ export default function Page() {
   };
 
   const box = {
-    type: ['With cover', 'Without cover'],
+    type: ['With cover', 'Without cover', 'Display'],
     color: ['Brown', 'White'],
     print: ['Printed', 'Not printed', 'Printed and varnished'],
     execution: ['With perforation', 'Without perforation'],
