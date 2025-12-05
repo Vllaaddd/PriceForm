@@ -68,7 +68,6 @@ export default function Home() {
                 </>
               ): null}
               <Info label="Other properties" value={calculation.otherProperties} />
-              <Info label="Skillet format" value={calculation.skilletFormat} />
               {calculation.skilletKnife !== null && (
                 <Info label="Skillet knife" value={calculation.skilletKnife} />
               )}
@@ -105,6 +104,8 @@ export default function Home() {
               )}
               <Info label="Skillet" value={calculation.skillet || ''} />
               <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
+              <Info label="Umkarton" value={calculation.umkarton || ''} />
+              <Info label="Umkarton price per roll" value={calculation.umkartonPrice?.toFixed(3) || ''} />
               <Info label="Total price per roll" value={calculation.totalPricePerRoll?.toFixed(3) || ''} />
               <Info label="Total price" value={calculation.totalPrice?.toFixed(3) || ''} />
             </div>

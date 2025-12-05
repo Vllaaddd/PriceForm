@@ -20,12 +20,14 @@ export const getOne = async (id: string): Promise<SkilletWithPrices> => {
 }
 
 export const find = async (filters: {
-    format: number;
+    width: number;
+    height: number;
     knife: string;
     density: number;
 }): Promise<SkilletWithPrices> => {
     const params = new URLSearchParams();
-    params.append("format", String(filters.format));
+    params.append("width", String(filters.width));
+    params.append("height", String(filters.height));
     params.append("knife", filters.knife);
     params.append("density", String(filters.density));
 

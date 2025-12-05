@@ -7,4 +7,5 @@ export enum ApiRoutes{
     CORES = 'cores',
     PERIODS = 'periods',
     RECIPIENTS = 'email-recipients',
+    UMKARTONS = 'umkartons',
 }

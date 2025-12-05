@@ -19,7 +19,7 @@ model Calculation{
     materialLength Int?
     materialColor String
     otherProperties String
-    skilletFormat String
+    skilletFormat String?
     skilletKnife String?
     skilletDensity Int?
     boxType String
@@ -49,6 +49,8 @@ model Calculation{
     corePrice Float?
     skillet String?
     skilletPrice Float?
+    umkarton String?
+    umkartonPrice Float?
     totalPricePerRoll Float?
     totalPrice Float?
 
@@ -88,12 +90,15 @@ model MaterialProperty{
     updatedAt DateTime @updatedAt
 }
 
-model Skillet {
+model Skillet{
     id Int @id @default(autoincrement())
     article String
-    format Int
     knife String
     density Int
+    basePrice Float
+    height Int
+    width Int
+    depth Int
 
     tierPrices SkilletTierPrice[]
 
@@ -101,7 +106,7 @@ model Skillet {
     updatedAt DateTime @updatedAt
 }
 
-model PriceTier {
+model PriceTier{
     id Int @id @default(autoincrement())
     minQty Int
     maxQty Int
@@ -111,7 +116,7 @@ model PriceTier {
     @@unique([minQty, maxQty])
 }
 
-model SkilletTierPrice {
+model SkilletTierPrice{
     id Int @id @default(autoincrement())
     skilletId Int
     tierId Int
@@ -122,6 +127,59 @@ model SkilletTierPrice {
 
     @@unique([skilletId, tierId])
     @@index([tierId])
+}
+
+model Umkarton{
+    id Int @id @default(autoincrement())
+    article String
+    fsDimension Int
+    displayCarton String
+    color String?
+    deckel String
+    fsQty Int
+    height Int
+    width Int
+    depth Int
+    bedoManu String
+    basePrice Float
+
+    tierPrices UmkartonTierPrice[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model UmkartonPriceTier{
+    id Int @id @default(autoincrement())
+    minQty Int
+    maxQty Int
+
+    UmkartonPrices UmkartonTierPrice[]
+
+    @@unique([minQty, maxQty])
+}
+
+model UmkartonTierPrice{
+    id Int @id @default(autoincrement())
+    umkartonId Int
+    tierId Int
+    price Float
+
+    umkarton Umkarton @relation(fields: [umkartonId], references: [id], onDelete: Cascade)
+    tier UmkartonPriceTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+
+    @@unique([umkartonId, tierId])
+    @@index([tierId])
+}
+
+model Deckel{
+    id Int @id @default(autoincrement())
+
+    article String
+    price Float
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Core{

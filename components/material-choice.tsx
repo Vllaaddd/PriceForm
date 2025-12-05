@@ -9,7 +9,6 @@ import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import { Period } from "@prisma/client";
-import { SkilletWithPrices } from "@/prisma/types";
 
 type CalculationForm = {
   creator?: string | null
@@ -158,7 +157,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let WVPerRoll = 0
     let materialName = undefined
 
-    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletFormat, skilletKnife, skilletDensity, totalOrderInRolls, period  } = form
+    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletKnife, skilletDensity, totalOrderInRolls, period  } = form
     if(material === 'Baking paper'){
       materialName = 'BP'
     }else{
@@ -179,7 +178,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         const materialWeight = square * form.density
         materialCost = (materialWeight / 1000) * Number(costPerKg)
       }else if (typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity && form.density) {
-        const square = Number(sheetWidth) * Number(sheetLength) * sheetQuantity
+        const square = (Number(sheetWidth) / 1000) * (Number(sheetLength) / 1000) * sheetQuantity
         const materialWeight = square * form.density
         materialCost = (materialWeight / 1000) * Number(costPerKg)
       }
@@ -215,29 +214,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         length = Number(sheetWidth) * sheetQuantity
       }
 
-      if(length <= 52){
-        WVPerRoll = await fetchLine('BP', length, 'BP lines')
+      if(length <= 52000){
+        WVPerRoll = await fetchLine('BP', length/1000, 'BP lines')
       }else{
         WVPerRoll = 0
       }
 
     }else if(roll === 'BP' && rollLength && Number(rollLength) > 52){
       WVPerRoll = 0
-    }
-
-    const skillet = await Api.skillets.find({
-      format: Number(skilletFormat),
-      knife: skilletKnife || '',
-      density: Number(skilletDensity)
-    })
-
-    const skilletName = skillet.article;
-    let skilletPrice = 0;
-
-    if (skillet && totalOrderInRolls) {
-      const tierPrice = skillet?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
-
-      skilletPrice = tierPrice ? tierPrice.price : 0;
     }
 
     const core = await Api.cores.find({ length: materialWidth || 0, type: roll || '' })
@@ -254,7 +238,46 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       corePrice = 0
     }
 
-    const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice)
+    let thickness = 0;
+
+    if(materialThickness && materialLength){
+      const coreOutsideDiameter = core.width + core.thickness * 2
+      thickness = Math.sqrt(((materialLength * 4 * materialThickness) / Math.PI) + (coreOutsideDiameter ** 2)) * 1.02;
+    }
+
+    const skillet = await Api.skillets.find({
+      width: materialWidth || 0,
+      height: thickness,
+      knife: skilletKnife || '',
+      density: Number(skilletDensity)
+    })
+
+    const skilletName = skillet.article;
+    let skilletPrice = 0;
+
+    if (skillet && totalOrderInRolls) {
+      const tierPrice = skillet?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
+
+      skilletPrice = tierPrice ? tierPrice.price : 0;
+    }
+
+    const umkarton = await Api.umkartons.find({
+      fsDimension: skillet.height,
+      displayCarton: form.boxType === 'Display' ? 'ja' : 'Nein',
+      width: core.length,
+      bedoManu: roll === 'Consumer' ? 'Ja' : 'Nein'
+    })
+
+    const umkartonName = umkarton.article;
+    let umkartonPrice = 0;
+
+    if (umkarton && totalOrderInRolls) {
+      const tierPrice = umkarton?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
+
+      umkartonPrice = tierPrice ? tierPrice.price : 0;
+    }
+
+    const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice) + Number(umkartonPrice);
     let totalPrice = totalPricePerRoll * (totalOrderInRolls || 0);
 
     if(totalOrderInRolls && totalOrderInRolls <= 30000){
@@ -265,7 +288,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       totalPrice = totalPrice + (totalPrice / 100 * 3)
     }
 
-    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, totalPricePerRoll, totalPrice }
+    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice }
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -298,7 +321,10 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       });
     }
 
-    if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
+    if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available" && props.umkarton === "This type of umkarton isn't available"){
+      swalFire("This type of skillet isn't available and no suitable core found and no suitable umkarton found.")
+      return
+    }if(props.core === "No suitable core found" && props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available and no suitable core found.")
       return
     }else if(props.core === "No suitable core found"){
@@ -306,6 +332,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       return
     }else if(props.skillet === "This type of skillet isn't available"){
       swalFire("This type of skillet isn't available.")
+      return
+    }else if(props.umkarton === "This type of umkarton isn't available"){
+      swalFire("This type of umkarton isn't available.")
       return
     }
 
@@ -502,11 +531,11 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
               </SelectField>
             </>
           )}
-          { (form.typeOfProduct === 'Consumer sheets' && form.material === 'Baking paper') && (
+          {(form.typeOfProduct === 'Consumer sheets' && form.material === 'Baking paper') && (
             <>
               {/* Sheet width */}
               <InputField
-                label="Sheet width(m)"
+                label="Sheet width(mm)"
                 type="string"
                 value={form.sheetWidth || ""}
                 onChange={(e) => handleChange("sheetWidth", e.target.value)}
@@ -514,7 +543,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
               {/* Sheet length */}
               <InputField
-                label="Sheet length(m)"
+                label="Sheet length(mm)"
                 type="string"
                 value={form.sheetLength || ""}
                 onChange={(e) => handleChange("sheetLength", e.target.value)}
@@ -571,28 +600,6 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             ))}
           </SelectField>
 
-          {/* Skillet format */}
-          <SelectField label="Skillet format" value={form.skilletFormat || ""} onChange={(e) => handleChange("skilletFormat", String(e.target.value))}>
-            <option value="">-- choose skillet format --</option>
-            {(() => {
-              let formats: string[] = skillet.format;
-
-              if (selectedRoll?.name === "BP") {
-                formats = skillet.format.slice(4, 8);
-              } else if (selectedRoll?.name === "Catering") {
-                formats = skillet.format.slice(7, 9);
-              } else {
-                formats = skillet.format.slice(0, 4);
-              }
-
-              return formats.map((f, i) => (
-                <option key={i} value={f}>
-                  {f}
-                </option>
-              ));
-            })()}
-          </SelectField>
-
           {/* Skillet knife */}
           <SelectField
             label="Skillet knife"
@@ -601,11 +608,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
           >
             <option value="">-- choose skillet knife --</option>
             {(
-              selectedRoll?.name === "BP"
-                ? [skillet.knife[0], ...skillet.knife.slice(-3)]
-                : selectedRoll?.name === "Catering"
-                ? [skillet.knife[0], ...skillet.knife.slice(-2)]
-                : skillet.knife.slice(0, 5)
+              (selectedRoll?.name === "BP" || selectedRoll?.name === "Consumer")
+                ? [skillet.knife[0], ...skillet.knife.slice(1, 3)]
+                : [skillet.knife[0], ...skillet.knife.slice(-2)]
             ).map((k, i) => (
               <option key={i} value={k}>
                 {k}

@@ -4,17 +4,25 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const format = Number(searchParams.get("format"));
+        const width = Number(searchParams.get("width"));
+        const height = Number(searchParams.get("height"));
         const knife = searchParams.get("knife");
         const density = Number(searchParams.get("density"));
 
-        const filters: any = {};
-        if (format) filters.format = format;
-        if (knife) filters.knife = knife;
-        if (density) filters.density = density;  
+        const whereClause: any = {
+            width: { gte: width },
+            height: { gte: height + 3 },
+        };
+
+        if (knife) whereClause.knife = knife;
+        if (density) whereClause.density = density;
 
         const bestSkillet = await prisma.skillet.findFirst({
-            where: filters,
+            where: whereClause,
+            orderBy: [
+                { height: 'asc' },
+                { width: 'asc' }
+            ],
             include: {
                 tierPrices: { include: { tier: true } }
             }

@@ -42,7 +42,7 @@ export default function Page() {
           name: 'Baking paper',
           width: [300, 330, 360, 380, 430, 450],
           color: ['White', 'Brown'],
-          otherProperties: ['Printed'],
+          otherProperties: ['Printed', 'Not relevant'],
           density: [35, 37, 39, 41],
           typeOfProduct: ['Consumer roll', 'Consumer sheets', 'Catering roll'],
           id: 4,
@@ -82,14 +82,14 @@ export default function Page() {
 
   const skillet = {
     format: ['39', '45', '50', '52', '45', '60', '90', 'Without skillet/lose', '90/Minibox'],
-    knife: ['No knife', 'Paper knife', 'Straight plastic knife', 'V-type plastic knife', 'U-type plastic knife', 'Straight plastic knife', 'Slider', 'Clip-on saw'],
+    knife: ['No knife', 'Straight plastic knife', 'V-type plastic knife', 'Slider', 'Clip-on saw'],
     density: [275, 350, 375, 400],
   };
 
   const box = {
     type: ['With cover', 'Without cover', 'Display'],
     color: ['Brown', 'White'],
-    print: ['Printed', 'Not printed', 'Printed and varnished'],
+    print: ['Printed', 'Not printed', 'Only barcode printed 2 sides', 'Only barcode printed 4 sides', 'Printed and varnished'],
     execution: ['With perforation', 'Without perforation'],
   };
 
