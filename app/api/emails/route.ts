@@ -1,9 +1,10 @@
+import { Api } from "@/services/api-client"
 import { NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, calculation } = await req.json()
+    const { email, calculation, type, text } = await req.json()
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -36,7 +37,6 @@ export async function POST(req: NextRequest) {
           { label: "Roll length", value: `${calculation.rollLength} m` },
         ] : []),
         { label: "Other properties", value: calculation.otherProperties },
-        { label: "Skillet format", value: calculation.skilletFormat },
         { label: "Skillet knife", value: calculation.skilletKnife },
         calculation.roll === 'Catering' ? { label: "Lochstanzlinge", value: calculation.lochstanzlinge } : { label: "Skillet density", value: `${calculation.skilletDensity} g/m²` },
         { label: "Box type", value: calculation.boxType },
@@ -61,6 +61,8 @@ export async function POST(req: NextRequest) {
           { label: "Core", value: `${calculation.core} mm` },
           { label: "Core price per roll", value: `${calculation.corePrice.toFixed(3)} mm` },
         ] : []),
+        { label: "Umkarton", value: calculation.umkarton },
+        { label: "Umkarton price per roll", value: calculation.umkartonPrice.toFixed(3) },
         { label: "Total price per roll", value: calculation.totalPricePerRoll.toFixed(3) },
         { label: "Total price", value: calculation.totalPrice.toFixed(3) },
     ]
@@ -94,11 +96,27 @@ export async function POST(req: NextRequest) {
         </div>
     `
 
+    const creatorHtml = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; color: #333;">
+            <h2 style="text-align: center; color: #2563eb; margin-bottom:20px;">
+                Calculation: ${calculation.title}
+            </h2>
+
+            <p>${text}</p>
+
+            <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+                <tbody>
+                ${rows}
+                </tbody>
+            </table>
+        </div>
+    `
+
     await transporter.sendMail({
         from: `"Calculations" <${process.env.SMTP_USER}>`,
         to: email,
         subject: `Calulcation: ${calculation.title}`,
-        html,
+        html: type === 'creator' ? creatorHtml : html,
     })
 
     return NextResponse.json({ success: true })

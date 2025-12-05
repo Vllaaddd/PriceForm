@@ -8,7 +8,7 @@ import { EmailModal } from "./email-modal"
 import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 import Swal from "sweetalert2";
-import { Period } from "@prisma/client";
+import { EmailText, Period } from "@prisma/client";
 
 type CalculationForm = {
   creator?: string | null
@@ -96,6 +96,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
   const [periods, setPeriods] = useState<Period[]>()
   const [emails, setEmails] = useState<string[]>()
   const [isLoading, setIsLoading] = useState(false)
+  const [emailText, setEmailText] = useState<EmailText>()
 
   useEffect(() => {
 
@@ -104,6 +105,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       try {
         const recipients = await Api.recipients.getAll()
         setEmails(recipients.map(r => r.email))
+
+        const text = await Api.emailtext.getText()
+        setEmailText(text)
       } catch (error) {
         console.error(error)
       }
@@ -157,7 +161,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let WVPerRoll = 0
     let materialName = undefined
 
-    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletKnife, skilletDensity, totalOrderInRolls, period  } = form
+    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletKnife, skilletDensity, totalOrderInRolls, period } = form
     if(material === 'Baking paper'){
       materialName = 'BP'
     }else{
@@ -309,8 +313,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         if (result.isConfirmed) {
           await Api.calculations.createCalculation({ ...cleanForm, ...props })
           emails?.map(email => {
-            sendEmail(email, cleanForm)
+            sendEmail(email, cleanForm, 'recipient', emailText?.text || '')
           })
+          sendEmail(form.creator || '', cleanForm, 'creator', emailText?.text || '')
           setForm({})
           setIsLoading(false)
           toast.success('Calculation created!')
@@ -340,8 +345,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     await Api.calculations.createCalculation({ ...cleanForm, ...props })
     emails?.map(email => {
-      sendEmail(email, cleanForm)
+      sendEmail(email, cleanForm, 'recipient', emailText?.text || '')
     })
+    sendEmail(form.creator || '', cleanForm, 'creator', emailText?.text || '')
     setForm({})
     setIsLoading(false)
     toast.success('Calculation created!')
@@ -767,7 +773,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         onClose={() => setIsModalOpen(false)}
         onSend={async (email) => {
           try {
-            await sendEmail(email, newCalculation)
+            await sendEmail(email, newCalculation, 'recipient', emailText?.text || '')
             toast.success("Calculation created and email sent successfully!")
           } catch (error) {
             console.error("Error sending email:", error)

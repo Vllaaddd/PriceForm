@@ -8,4 +8,5 @@ export enum ApiRoutes{
     PERIODS = 'periods',
     RECIPIENTS = 'email-recipients',
     UMKARTONS = 'umkartons',
+    EMAILTEXT = 'email-text',
 }
