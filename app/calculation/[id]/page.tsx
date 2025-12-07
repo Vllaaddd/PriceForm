@@ -135,7 +135,7 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onSend={async (email) => {
           try {
-            await sendEmail(email, calculation)
+            await sendEmail(email, calculation, 'recipient', '')
             toast.success("Email sent successfully!")
           } catch (error) {
             console.error("Error sending email:", error)
