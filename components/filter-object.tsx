@@ -27,7 +27,7 @@ export const FilterObject: FC<Props> = ({ title, name, fields, selectedValue, on
                     />
                     <span className="text-gray-700 group-hover:text-gray-900">All</span>
                 </label>
-                {fields.map((v) => (
+                {fields?.map((v) => (
                     <label key={v} className="flex items-center gap-2 cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-lg transition">
                         <input
                             type="radio"
