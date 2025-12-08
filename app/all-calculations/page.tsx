@@ -27,7 +27,9 @@ export default function Home(){
         async function fetchCalculations() {
             try {
                 const fetchedCalculations = await Api.calculations.getAll();
-                setCalculations(fetchedCalculations);
+                setCalculations(fetchedCalculations.sort((a, b) => {
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                }));
 
                 const fields: Record<string, Set<string>> = {};
 
@@ -247,6 +249,9 @@ export default function Home(){
                                     ) : (
                                         `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness} mm`
                                     )}
+                                </p>
+                                <p className="text-sm text-gray-600 mb-2">
+                                    <span className="font-medium">Creation date:</span> {new Date(calculation.createdAt).toLocaleDateString()}
                                 </p>
                                 <p className="text-md font-bold text-blue-700 mt-2 pt-2 border-t border-gray-100">
                                     Total Rolls: {calculation.totalOrderInRolls}
