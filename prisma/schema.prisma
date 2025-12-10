@@ -53,6 +53,7 @@ model Calculation{
     umkartonPrice Float?
     totalPricePerRoll Float?
     totalPrice Float?
+    margin Float?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

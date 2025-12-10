@@ -17,5 +17,5 @@ export const Api = {
     periods,
     recipients,
     umkartons,
-    emailtext
+    emailtext,
 }

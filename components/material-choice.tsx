@@ -283,16 +283,20 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice) + Number(umkartonPrice);
     let totalPrice = totalPricePerRoll * (totalOrderInRolls || 0);
+    let margin = 0;
 
     if(totalOrderInRolls && totalOrderInRolls <= 30000){
       totalPrice = totalPrice + (totalPrice / 100 * 7)
+      margin = (totalPrice / 100 * 7)
     }else if(totalOrderInRolls && (totalOrderInRolls > 30000 && totalOrderInRolls <= 200000)){
       totalPrice = totalPrice + (totalPrice / 100 * 5)
+      margin = (totalPrice / 100 * 5)
     }else if(totalOrderInRolls && totalOrderInRolls > 200000){
       totalPrice = totalPrice + (totalPrice / 100 * 3)
+      margin = (totalPrice / 100 * 3)
     }
 
-    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice }
+    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin }
   }
 
   const handleSubmit = async (e: FormEvent) => {

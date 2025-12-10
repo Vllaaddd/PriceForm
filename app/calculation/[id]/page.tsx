@@ -2,6 +2,7 @@
 
 import { EmailModal } from "@/components/email-modal"
 import { Info } from "@/components/info"
+import { SectionHeader } from "@/components/section-header"
 import { Api } from "@/services/api-client"
 import { sendEmail } from "@/services/emails"
 import { Calculation } from "@prisma/client"
@@ -30,103 +31,141 @@ export default function Home() {
     fetchCalculations()
   }, [id])  
 
-  return (
-    <div className="min-h-screen bg-gray-100 py-10 px-6">
-      <div className="max-w-5xl mx-auto">
+  return(
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto">
         {calculation ? (
-          <div className="bg-white shadow-md rounded-2xl p-8">
-            <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
-              {calculation.title}
-            </h1>
+          <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+            
+            {/* Header */}
+            <div className="bg-blue-600 p-8 text-center text-white">
+              <h1 className="text-3xl font-bold mb-2">{calculation.title}</h1>
+              <p className="opacity-90">
+                Created on {new Date(calculation.createdAt).toLocaleDateString()}
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 sm:p-10">
+              
+              <div className="hidden sm:grid sm:grid-cols-12 text-xs uppercase text-gray-400 font-bold tracking-wider mb-4 border-b pb-2 px-2">
+                <div className="col-span-5">Description</div>
+                <div className="col-span-3 text-center">Unit</div>
+                <div className="col-span-4 text-right">Value</div>
+              </div>
+
+              <SectionHeader title="General Information" />
               <Info label="Creator" value={calculation.creator} />
-              <Info label="Roll type" value={calculation.roll} />
+              <Info label="Period" value={calculation.period} />
+              <Info label="Delivery Conditions" value={calculation.deliveryConditions} />
+              <Info label="Delivery Address" value={calculation.deliveryAddress} />
+              <Info label="Reference Article" value={calculation.referenceArticle} />
+
+              <SectionHeader title="Material Specifications" />
+              <Info label="Roll Type" value={calculation.roll} />
               <Info label="Material" value={calculation.material} />
-              <Info label={calculation.material === "Baking paper" ? 'Paper color': 'Material color'} value={calculation.materialColor} />
-              <Info label="Width" value={`${calculation.materialWidth} мм`} />
+              <Info label="Material Color" value={calculation.materialColor} />
+              <Info label="Width" unit="mm" value={calculation.materialWidth} />
+              
               {calculation.material === "Baking paper" ? (
                 <>
-                  <Info label="Density" value={`${calculation.density} g/m²`} />
-                  <Info label="Type of product" value={`${calculation.typeOfProduct}`} />
+                  <Info label="Density" unit="g/m²" value={calculation.density} />
+                  <Info label="Type of Product" value={calculation.typeOfProduct} />
                 </>
               ) : (
                 <>
-                  <Info label="Length" value={`${calculation.materialLength} мм`} />
-                  <Info label="Thickness" value={`${calculation.materialThickness} мм`} />
+                  <Info label="Length" unit="mm" value={calculation.materialLength} />
+                  <Info label="Thickness" unit="mm" value={calculation.materialThickness} />
                 </>
               )}
+
+              <Info label="Other Properties" value={calculation.otherProperties} />
+
               {(calculation.typeOfProduct === 'Consumer sheets' && calculation.material === 'Baking paper') ? (
                 <>
-                  <Info label="Sheet width(m)" value={`${calculation.sheetWidth}`} />
-                  <Info label="Sheet length(m)" value={`${calculation.sheetLength}`} />
-                  <Info label="Sheet quantity" value={`${calculation.sheetQuantity}`} />
+                  <Info label="Sheet Width" unit="m" value={calculation.sheetWidth} />
+                  <Info label="Sheet Length" unit="m" value={calculation.sheetLength} />
+                  <Info label="Sheet Quantity" unit="pcs" value={calculation.sheetQuantity} />
                 </>
               ) : calculation.typeOfProduct === 'Consumer roll' ? (
-                <>
-                  <Info label="Roll length(m)" value={`${calculation.rollLength}`} />
-                </>
-              ): null}
-              <Info label="Other properties" value={calculation.otherProperties} />
-              {calculation.skilletKnife !== null && (
-                <Info label="Skillet knife" value={calculation.skilletKnife} />
+                <Info label="Roll Length" unit="m" value={calculation.rollLength} />
+              ) : null}
+
+              <SectionHeader title="Packaging & Box" />
+              {calculation.skilletKnife && <Info label="Skillet Knife" value={calculation.skilletKnife} />}
+              
+              {calculation.roll === 'Catering' ? (
+                <Info label="Lochstanzlinge" value={calculation.lochstanzlinge} />
+              ) : (
+                <Info label="Skillet Density" unit="g/m²" value={calculation.skilletDensity} />
               )}
-              {calculation.roll === 'Catering' ?
-                <Info label="Lochstanzlinge" value={calculation.lochstanzlinge || ""} />
-               : (
-                <Info label="Skillet density" value={`${calculation.skilletDensity} g/m²`} />
-              )}
-              <Info label="Box type" value={calculation.boxType} />
-              <Info label="Box color" value={calculation.boxColor} />
-              <Info label="Box print" value={calculation.boxPrint} />
-              <Info label="Box execution" value={calculation.boxExecution} />
-              <Info label="Rolls per carton" value={calculation.rollsPerCarton} />
-              <Info label="Antislide paper sheets" value={calculation.antislidePaperSheets} />
-              <Info label="Carton per pallet" value={calculation.cartonPerPallet} />
-              <Info label="Total order in rolls" value={calculation.totalOrderInRolls} />
-              <Info label="Total order in pallets" value={calculation.totalOrderInPallets} />
-              <Info label="Period" value={calculation.period} />
-              <Info label="Delivery conditions" value={calculation.deliveryConditions} />
-              <Info label="Delivery address" value={calculation.deliveryAddress} />
-              <Info label="Material cost per roll" value={calculation.materialCost.toFixed(2)} />
-              <Info label="WV per roll" value={calculation.WVPerRoll.toFixed(3)} />
-              { calculation.referenceArticle && (
-                <Info label="Reference article" value={calculation.referenceArticle} />
-              )}
-              { calculation.remarks && ( 
-                <Info label="Remarks" value={calculation.remarks} />
-              )}
+
+              <Info label="Box Type" value={calculation.boxType} />
+              <Info label="Box Color" value={calculation.boxColor} />
+              <Info label="Box Print" value={calculation.boxPrint} />
+              <Info label="Box Execution" value={calculation.boxExecution} />
+              <Info label="Rolls per Carton" unit="pcs" value={calculation.rollsPerCarton} />
+              <Info label="Antislide Paper Sheets" value={calculation.antislidePaperSheets} />
+              <Info label="Cartons per Pallet" unit="box" value={calculation.cartonPerPallet} />
+              
+              <SectionHeader title="Order & Pricing" />
+              <Info label="Total Order (Rolls)" unit="rolls" value={calculation.totalOrderInRolls} />
+              <Info label="Total Order (Pallets)" unit="pallets" value={calculation.totalOrderInPallets} />
+              
+              <div className="my-4 border-t border-dashed border-gray-300"></div>
+
+              <Info label="Material Cost" unit="€/roll" value={calculation.materialCost?.toFixed(2)} isCurrency />
+              <Info label="WV per Roll" unit="€" value={calculation.WVPerRoll?.toFixed(3)} isCurrency />
+              <Info label="Margin" unit="€" value={calculation.margin?.toFixed(3)} isCurrency />
+              
               {calculation.material !== 'Baking paper' && (
                 <>
-                  <Info label="Core" value={calculation.core || ''} />
-                  <Info label="Core price per roll" value={calculation.corePrice?.toFixed(3) || ''} />
+                  <Info label="Core" value={calculation.core} />
+                  <Info label="Core Price" unit="€/roll" value={calculation.corePrice?.toFixed(3)} isCurrency />
                 </>
               )}
-              <Info label="Skillet" value={calculation.skillet || ''} />
-              <Info label="Skillet price per roll" value={calculation.skilletPrice?.toFixed(3) || ''} />
-              <Info label="Umkarton" value={calculation.umkarton || ''} />
-              <Info label="Umkarton price per roll" value={calculation.umkartonPrice?.toFixed(3) || ''} />
-              <Info label="Total price per roll" value={calculation.totalPricePerRoll?.toFixed(3) || ''} />
-              <Info label="Total price" value={calculation.totalPrice?.toFixed(3) || ''} />
-            </div>
 
-            <div className="flex justify-center gap-6 mt-8">
+              <Info label="Skillet Name" value={calculation.skillet} />
+              <Info label="Skillet Price" unit="€/roll" value={calculation.skilletPrice?.toFixed(3)} isCurrency />
+              
+              <Info label="Umkarton" value={calculation.umkarton} />
+              <Info label="Umkarton Price" unit="€/roll" value={calculation.umkartonPrice?.toFixed(3)} isCurrency />
+
+              <div className="bg-gray-50 rounded-lg p-4 mt-4 border border-gray-200">
+                <Info label="Total Price per Roll" unit="€" value={calculation.totalPricePerRoll?.toFixed(3)} isCurrency />
+                <div className="border-t border-gray-300 my-2"></div>
+                <div className="flex justify-between items-center text-lg sm:text-xl font-bold text-blue-700 mt-2">
+                  <span>Total Price</span>
+                  <span>€ {calculation.totalPrice?.toFixed(3)}</span>
+                </div>
+              </div>
+
+              {calculation.remarks && (
+                 <div className="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-sm text-yellow-800">
+                    <span className="font-bold block mb-1">Remarks:</span>
+                    {calculation.remarks}
+                 </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
                 <Link
-                    href={`/?from=${id}`}
-                    className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow cursor-pointer"
+                  href={`/?from=${id}`}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition shadow-sm text-center"
                 >
-                    Create based on this calculation
+                  Create based on this calculation
                 </Link>
                 <button
-                    className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow cursor-pointer"
-                    onClick={() => setIsModalOpen(true)}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md transition transform hover:-translate-y-0.5 cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
                 >
-                    Send to email
+                  Send to Email
                 </button>
+              </div>
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-500">Loading...</p>
+          <div className="flex justify-center items-center h-64">
+             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         )}
       </div>
 
@@ -144,8 +183,7 @@ export default function Home() {
         }}
       />
 
-      <ToastContainer />
-
+      <ToastContainer position="bottom-right" />
     </div>
   )
 }
