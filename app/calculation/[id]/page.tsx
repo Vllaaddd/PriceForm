@@ -37,7 +37,6 @@ export default function Home() {
         {calculation ? (
           <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
             
-            {/* Header */}
             <div className="bg-blue-600 p-8 text-center text-white">
               <h1 className="text-3xl font-bold mb-2">{calculation.title}</h1>
               <p className="opacity-90">
