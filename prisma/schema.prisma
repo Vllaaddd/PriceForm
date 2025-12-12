@@ -54,6 +54,7 @@ model Calculation{
     totalPricePerRoll Float?
     totalPrice Float?
     margin Float?
+    materialWeight Float?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -161,7 +161,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let WVPerRoll = 0
     let materialName = undefined
 
-    const { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletKnife, skilletDensity, totalOrderInRolls, period } = form
+    let { material, materialWidth, materialThickness, materialLength, roll, rollLength, sheetLength, sheetWidth, sheetQuantity, typeOfProduct, skilletKnife, skilletDensity, totalOrderInRolls, period } = form
     if(material === 'Baking paper'){
       materialName = 'BP'
     }else{
@@ -173,17 +173,19 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       material: materialName || "",
     })
 
+    let materialWeight = 0
+
     if (materialWidth && materialThickness && materialLength && density && material !== 'BP') {
-      const materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
+      materialWeight = materialWidth * materialThickness * materialLength * Number(density) / 1000000
       materialCost = materialWeight * Number(costPerKg)
     }else{
       if(typeOfProduct !== 'Consumer sheets' && materialWidth && rollLength && form.density){
         const square = (materialWidth / 1000) * Number(rollLength)
-        const materialWeight = square * form.density
+        materialWeight = square * form.density
         materialCost = (materialWeight / 1000) * Number(costPerKg)
       }else if (typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity && form.density) {
         const square = (Number(sheetWidth) / 1000) * (Number(sheetLength) / 1000) * sheetQuantity
-        const materialWeight = square * form.density
+        materialWeight = square * form.density
         materialCost = (materialWeight / 1000) * Number(costPerKg)
       }
     }
@@ -276,9 +278,9 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let umkartonPrice = 0;
 
     if (umkarton && totalOrderInRolls) {
-      const tierPrice = umkarton?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
-
-      umkartonPrice = tierPrice ? tierPrice.price : 0;
+      const tierPrice = umkarton.tierPrices.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
+      console.log('tierPrice', umkarton.tierPrices, totalOrderInRolls);
+      umkartonPrice = (tierPrice ? tierPrice.price : 0);
     }
 
     const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice) + Number(umkartonPrice);
@@ -287,16 +289,16 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     if(totalOrderInRolls && totalOrderInRolls <= 30000){
       totalPrice = totalPrice + (totalPrice / 100 * 7)
-      margin = (totalPrice / 100 * 7)
+      margin = 7
     }else if(totalOrderInRolls && (totalOrderInRolls > 30000 && totalOrderInRolls <= 200000)){
       totalPrice = totalPrice + (totalPrice / 100 * 5)
-      margin = (totalPrice / 100 * 5)
+      margin = 5
     }else if(totalOrderInRolls && totalOrderInRolls > 200000){
       totalPrice = totalPrice + (totalPrice / 100 * 3)
-      margin = (totalPrice / 100 * 3)
+      margin = 3
     }
 
-    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin }
+    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin, materialWeight }
   }
 
   const handleSubmit = async (e: FormEvent) => {
