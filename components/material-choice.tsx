@@ -181,12 +181,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }else{
       if(typeOfProduct !== 'Consumer sheets' && materialWidth && rollLength && form.density){
         const square = (materialWidth / 1000) * Number(rollLength)
-        materialWeight = square * form.density
-        materialCost = (materialWeight / 1000) * Number(costPerKg)
+        materialWeight = (square * form.density) / 1000
+        materialCost = materialWeight * Number(costPerKg)
+        materialLength = Number(rollLength)
       }else if (typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity && form.density) {
         const square = (Number(sheetWidth) / 1000) * (Number(sheetLength) / 1000) * sheetQuantity
-        materialWeight = square * form.density
-        materialCost = (materialWeight / 1000) * Number(costPerKg)
+        materialWeight = (square * form.density) / 1000
+        materialCost = materialWeight * Number(costPerKg)
+        materialLength = Number(sheetLength) * Number(sheetQuantity) / 1000
       }
     }
 
@@ -278,8 +280,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     let umkartonPrice = 0;
 
     if (umkarton && totalOrderInRolls) {
-      const tierPrice = umkarton.tierPrices.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
-      console.log('tierPrice', umkarton.tierPrices, totalOrderInRolls);
+      const tierPrice = umkarton?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
       umkartonPrice = (tierPrice ? tierPrice.price : 0);
     }
 
@@ -298,7 +299,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       margin = 3
     }
 
-    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin, materialWeight }
+    return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin, materialWeight, foliePricePerKg: Number(costPerKg), materialLength }
   }
 
   const handleSubmit = async (e: FormEvent) => {
