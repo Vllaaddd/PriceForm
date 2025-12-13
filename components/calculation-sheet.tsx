@@ -24,11 +24,11 @@ export const CalculationSheet: FC<Props> = ({ data }) => {
     { label: "Core", unit: "EUR", val: data.roll === 'BP' ? null : data.corePrice, decimals: 3 },
     { label: "Skillet", unit: "EUR", val: data.skilletPrice, decimals: 3 },
     { label: "Umkarton", unit: "EUR", val: data.umkartonPrice, decimals: 3 },
-    { label: "Zw/ потім", unit: "EUR", val: 0.000, decimals: 3 },
+    { label: "Zw/ потім", unit: "EUR", val: null, decimals: 3 },
     { label: "W&V", unit: "EUR", val: data.WVPerRoll, decimals: 3 },
     { label: "FORA Zusch", unit: "%", val: data.margin, decimals: 3 },
     { label: "EXW/ потім", unit: "EUR", val: null, decimals: 3 },
-    { label: "Lagerkoste/ потім", unit: "EUR", val: 0.016, decimals: 3 },
+    { label: "Lagerkoste/ потім", unit: "EUR", val: null, decimals: 3 },
     
     { type: "separator"},
     
