@@ -5,23 +5,28 @@ import { FilterIcon } from "@/icons/FilterIcon"
 import { XIcon } from "@/icons/XIcon"
 import { Api } from "@/services/api-client"
 import { Calculation } from "@prisma/client"
+import { Box, Calendar, ChevronRight, Eye, Layers, Plus, SearchX } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function Home(){
 
     const [calculations, setCalculations] = useState<Calculation[]>([])
-    const [viewVariant, setViewVariant] = useState<'grid' | 'table'>('grid')
+    const [viewVariant, setViewVariant] = useState<'grid' | 'table'>('table')
     const [isFilterOpen, setIsFilterOpen] = useState(false)
     const [filterFields, setFilterFields] = useState<Record<string, string[]>>({})
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filteredCalculations, setFilteredCalculations] = useState<Calculation[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading , setIsLoading] = useState(true);
 
     const hasActiveFilters = Object.values(filters).some(f => f && f !== "All");
     const activeFilterCount = Object.values(filters).filter(
         (v) => v && v !== "All"
     ).length;
+
+    const router = useRouter()
 
     useEffect(() => {
         async function fetchCalculations() {
@@ -48,8 +53,10 @@ export default function Home(){
                 }
 
                 setFilterFields(formatted);
+                setIsLoading(false);
             } catch (err) {
                 console.error(err);
+                setIsLoading(false);
             }
         }
 
@@ -84,8 +91,8 @@ export default function Home(){
         <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
                 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-8 mb-8 bg-white p-4 sm:p-6 rounded-xl shadow-md">
-                    <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                <div className="flex flex-col max-w-6xl lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-8 mb-8 bg-white p-4 sm:p-6 rounded-xl shadow-md">
+                    <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-4">
                         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center sm:text-left">
                             {hasActiveFilters ? (
                                 <>
@@ -121,7 +128,7 @@ export default function Home(){
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-center sm:justify-end gap-3">
+                    <div className="flex items-center justify-center lg:justify-end gap-3">
                         <button
                             onClick={() => setIsFilterOpen(true)}
                             className="flex items-center justify-center gap-2 px-4 py-2 h-12 text-sm sm:text-base rounded-lg font-semibold transition duration-200 shadow-md bg-blue-500 text-white hover:bg-blue-600 w-[140px] cursor-pointer"
@@ -129,7 +136,8 @@ export default function Home(){
                             <FilterIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             {Object.values(filters).some(f => f !== null && f !== '')
                                 ? `Filters (${activeFilterCount})`
-                                : 'Filters'}
+                                : 'Filters'
+                            }
                         </button>
 
                         <div className="flex items-center space-x-2 p-1 bg-gray-200 rounded-xl">
@@ -160,11 +168,11 @@ export default function Home(){
                     </div>
                 </div>
 
-                {filteredCalculations.length === 0 && (
+                {filteredCalculations.length === 0 && hasActiveFilters && (
                     <div className="p-10 bg-white rounded-xl shadow-md">
                         <p className="text-center text-xl text-gray-500 font-medium">
                             {
-                                calculations.length === 0 
+                                calculations.length === 0
                                 ? "No calculations found currently." 
                                 : "No calculations match the current filters. Try clearing them."
                             }
@@ -173,53 +181,90 @@ export default function Home(){
                 )}
 
                 {viewVariant === 'table' && filteredCalculations.length > 0 && (
-                    <div className="overflow-x-auto shadow-xl rounded-2xl border border-gray-200 bg-white">
-                        <table className="min-w-full text-sm text-left text-gray-700">
-                            <thead className="bg-gray-50 text-gray-900 uppercase font-bold border-b border-gray-200">
-                                <tr>
-                                    <th className="px-5 py-3">Title</th>
-                                    <th className="px-5 py-3">Material</th>
-                                    <th className="px-5 py-3">Dimensions</th>
-                                    <th className="px-5 py-3">Color</th>
-                                    <th className="px-5 py-3">Box Type</th>
-                                    <th className="px-5 py-3">Total Rolls</th>
-                                    <th className="px-5 py-3">Period</th>
-                                    <th className="px-5 py-3">Details</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {filteredCalculations.map((calculation, index) => (
-                                    <tr
-                                        key={calculation.id}
-                                        className={`transition-colors ${
-                                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                                        } hover:bg-blue-50/50`}
-                                    >
-                                        <td className="px-5 py-3 font-semibold text-gray-900">
-                                            {calculation.title}
-                                        </td>
-                                        <td className="px-5 py-3">{calculation.material}</td>
-                                        <td className="px-5 py-3">
-                                            {calculation.material === "Baking paper"
-                                            ? `${calculation?.materialWidth} × ${calculation.rollLength} mm`
-                                            : `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness} mm`}
-                                        </td>
-                                        <td className="px-5 py-3">{calculation.materialColor}</td>
-                                        <td className="px-5 py-3">{calculation.boxType}</td>
-                                        <td className="px-5 py-3 font-mono text-blue-700">{calculation.totalOrderInRolls}</td>
-                                        <td className="px-5 py-3">{calculation.period}</td>
-                                        <td className="px-5 py-3">
-                                            <Link
-                                                href={`/calculation/${calculation.id}`}
-                                                className="font-bold text-blue-600 hover:text-blue-800 transition underline-offset-2 hover:underline"
-                                            >
-                                                View →
-                                            </Link>
-                                        </td>
+                    <div className="w-full max-w-6xl mx-auto">
+                        <div className="overflow-x-auto pb-4">
+                            <table className="min-w-full text-sm text-left border-separate border-spacing-y-3">
+                                <thead>
+                                    <tr className="text-gray-400 text-xs uppercase tracking-wider font-medium">
+                                        <th className="px-5 pb-2">Calculation Info</th>
+                                        <th className="px-5 pb-2">Details</th>
+                                        <th className="px-5 pb-2">Properties</th>
+                                        <th className="px-5 pb-2 text-center">Volume</th>
+                                        <th className="px-5 pb-2 text-right"></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+
+                                <tbody className="text-gray-600">
+                                    {filteredCalculations.map((calculation) => (
+                                        <tr
+                                            key={calculation.id}
+                                            onClick={() => router.push(`/calculation/${calculation.id}`)}
+                                            className="bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group rounded-xl cursor-pointer"
+                                        >
+                                            <td className="px-5 py-4 rounded-l-xl border-l-4 border-transparent group-hover:border-blue-500 transition-colors bg-white">
+                                                <div className="flex flex-col">
+                                                    <span className="text-base font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+                                                        {calculation.title}
+                                                    </span>
+                                                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                                                        <Calendar className="w-3 h-3" />
+                                                        {new Date(calculation.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td className="px-5 py-4 bg-white">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-100 transition-colors">
+                                                        <Layers className="w-4 h-4" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-gray-900">
+                                                            {calculation.material}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500">
+                                                            {calculation.materialColor}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td className="px-5 py-4 bg-white">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-400 transition-colors"></span>
+                                                        {calculation.material === "Baking paper"
+                                                            ? `${calculation?.materialWidth} × ${calculation.rollLength}`
+                                                            : `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness}`}
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                                        <Box className="w-3 h-3" />
+                                                        {calculation.boxType}
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td className="px-5 py-4 bg-white text-center">
+                                                <div className="inline-flex flex-col items-center justify-center px-4 py-1.5 rounded-lg bg-gray-50 border border-gray-100 group-hover:border-blue-200 group-hover:bg-blue-50/30 transition-all">
+                                                    <span className="text-lg font-bold text-gray-900 leading-none">
+                                                        {calculation.totalOrderInRolls}
+                                                    </span>
+                                                    <span className="text-[10px] uppercase font-semibold text-gray-400">
+                                                        Rolls
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td className="px-5 py-4 rounded-r-xl bg-white text-right">
+                                                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-300 group-hover:text-blue-600 group-hover:bg-blue-50 transition-all duration-200">
+                                                    <ChevronRight className="w-5 h-5" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 
@@ -429,6 +474,53 @@ export default function Home(){
                 </div>
             )}
 
+            {isLoading && (
+                <div className="w-full max-w-6xl mx-auto space-y-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div 
+                            key={i} 
+                            className="w-full h-20 bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex items-center justify-between animate-pulse"
+                        >
+                            <div className="flex items-center gap-6 w-full">
+                                <div className="w-12 h-12 bg-gray-100 rounded-full shrink-0" />
+                                <div className="flex-1 space-y-2">
+                                    <div className="h-4 w-1/4 bg-gray-100 rounded" />
+                                    <div className="h-3 w-1/3 bg-gray-50 rounded" />
+                                </div>
+                                <div className="hidden sm:block h-8 w-24 bg-gray-100 rounded-lg shrink-0" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {calculations.length === 0 && !isLoading && !hasActiveFilters && (
+                <div className="w-full max-w-6xl mx-auto">
+                    <div className="flex flex-col items-center justify-center text-center p-12 bg-white rounded-2xl border border-gray-200 shadow-sm min-h-[400px]">
+                        
+                        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+                            <SearchX className="w-10 h-10 text-blue-500" />
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            No calculations found
+                        </h3>
+                        
+                        <p className="text-gray-500 max-w-sm mb-8 text-lg">
+                            It looks like you haven't created any price calculations yet. 
+                            Start by adding your first material calculation.
+                        </p>
+
+                        <Link 
+                            href='/' 
+                            className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95"
+                        >
+                            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                            Create new calculation
+                        </Link>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
