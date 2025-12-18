@@ -5,7 +5,7 @@ import { FilterIcon } from "@/icons/FilterIcon"
 import { XIcon } from "@/icons/XIcon"
 import { Api } from "@/services/api-client"
 import { Calculation } from "@prisma/client"
-import { Box, Calendar, ChevronRight, Eye, Layers, Plus, SearchX } from "lucide-react"
+import { Box, Calendar, ChevronRight, Eye, Layers, Package, Palette, Plus, Ruler, SearchX } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -272,207 +272,291 @@ export default function Home(){
                 )}
 
                 {viewVariant === 'grid' && filteredCalculations.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
                         {filteredCalculations.map((calculation, index) => (
                             <Link
                                 href={`/calculation/${calculation.id}`}
-                                className="block bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-blue-300 transition-all duration-200 group"
                                 key={index}
+                                className="group relative flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                             >
-                                <h2 className="text-xl font-extrabold mb-2 text-gray-900 group-hover:text-blue-600 transition">
-                                    {calculation.title}
-                                </h2>
-                                <p className="text-sm text-gray-600 mb-1">
-                                    <span className="font-medium">Material:</span> {calculation.material}
-                                </p>
-                                <p className="text-sm text-gray-600 mb-1">
-                                    <span className="font-medium">Roll Type:</span> {calculation.roll}
-                                </p>
-                                <p className="text-sm text-gray-600 mb-1">
-                                    <span className="font-medium">Color:</span> {calculation.materialColor}
-                                </p>
-                                <p className="text-sm text-gray-600 mb-2">
-                                    <span className="font-medium">Dimensions:</span> 
-                                    {calculation.material !== "Baking paper"
-                                        ? ` ${calculation.materialWidth} mm × ${calculation.materialLength} m  × ${calculation.materialThickness} my`
-                                        : calculation.material === 'Baking paper' && calculation.typeOfProduct === 'Consumer sheets'
-                                            ? ` ${calculation?.sheetWidth} mm × ${calculation.sheetLength} mm`
-                                            : ` ${calculation?.materialWidth} mm × ${calculation.rollLength} m`
-                                    }
-                                </p>
-                                <p className="text-sm text-gray-600 mb-2">
-                                    <span className="font-medium">Creation date:</span> {new Date(calculation.createdAt).toLocaleDateString()}
-                                </p>
-                                <p className="text-md font-bold text-blue-700 mt-2 pt-2 border-t border-gray-100">
-                                    Total Rolls: {calculation.totalOrderInRolls}
-                                </p>
+                                <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-0 left-0" />
+
+                                <div className="p-6 flex flex-col h-full">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h2 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                                                {calculation.title}
+                                            </h2>
+                                            <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
+                                                <Calendar className="w-3.5 h-3.5" />
+                                                {new Date(calculation.createdAt).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                        <span className="px-2 py-1 rounded-md bg-gray-100 text-xs font-semibold text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                            {calculation.material.split(' ')[0]}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-6 flex-1">
+                                        
+                                        <div className="flex items-start gap-2">
+                                            <Layers className="w-4 h-4 text-gray-400 mt-0.5" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] uppercase text-gray-400 font-medium">Material</span>
+                                                <span className="text-sm font-medium text-gray-700 leading-tight">{calculation.material}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-2">
+                                            <Box className="w-4 h-4 text-gray-400 mt-0.5" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] uppercase text-gray-400 font-medium">Type</span>
+                                                <span className="text-sm font-medium text-gray-700 leading-tight">{calculation.roll}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-2">
+                                            <Palette className="w-4 h-4 text-gray-400 mt-0.5" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] uppercase text-gray-400 font-medium">Color</span>
+                                                <span className="text-sm font-medium text-gray-700 leading-tight">{calculation.materialColor}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="col-span-2 flex items-start gap-2 bg-gray-50/80 p-2 rounded-lg border border-gray-100">
+                                            <Ruler className="w-4 h-4 text-blue-500 mt-0.5" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] uppercase text-gray-400 font-medium">Dimensions</span>
+                                                <span className="text-sm font-semibold text-gray-800 leading-tight">
+                                                    {calculation.material !== "Baking paper"
+                                                        ? `${calculation.materialWidth}mm × ${calculation.materialLength}m × ${calculation.materialThickness}my`
+                                                        : calculation.typeOfProduct === 'Consumer sheets'
+                                                            ? `${calculation?.sheetWidth}mm × ${calculation.sheetLength}mm`
+                                                            : `${calculation?.materialWidth}mm × ${calculation.rollLength}m`
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                        <span className="text-xs font-medium text-gray-500">Total Volume</span>
+                                        <div className="flex items-center gap-2 text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full">
+                                            <Package className="w-4 h-4" />
+                                            <span className="text-sm font-bold">
+                                                {calculation.totalOrderInRolls.toLocaleString()} Rolls
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </Link>
                         ))}
                     </div>
                 )}
             </div>
-
+            
             {isFilterOpen && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col relative">
-                        <div className="flex items-center justify-between rounded-t-2xl px-6 py-4 border-b sticky top-0 bg-white z-10">
-                            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                <FilterIcon className="w-6 h-6 text-blue-600" />
-                                Filters
-                            </h2>
+                <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    {/* Анімація появи */}
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+                        
+                        {/* 1. HEADER (Фіксований, не скролиться) */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white rounded-t-2xl shrink-0 z-20">
+                            <div className="flex flex-col">
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <FilterIcon className="w-5 h-5 text-blue-600" />
+                                    Refine Results
+                                </h2>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Select properties to filter calculations
+                                </p>
+                            </div>
                             <button
                                 onClick={() => setIsFilterOpen(false)}
-                                className="text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all cursor-pointer"
                             >
-                                <XIcon className="w-7 h-7" />
+                                <XIcon className="w-5 h-5" />
                             </button>
                         </div>
 
-                        <div className="overflow-y-auto flex-1 px-6 py-6 space-y-8">
+                        <div className="flex-1 min-h-0 bg-gray-50"> 
+                            <div className="h-full grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                                
+                                <div className="md:col-span-4 lg:col-span-3 overflow-y-auto h-full custom-scrollbar bg-white relative">
+                        
+                                    <div className="sticky top-0 bg-white z-10 px-5 py-3 border-b border-gray-100">
+                                        <h3 className="text-sm font-bold text-gray-900">
+                                            Main Properties
+                                        </h3>
+                                    </div>
 
-                            <FilterObject
-                                className="border-t-0"
-                                title="Roll type"
-                                name="roll"
-                                fields={filterFields.roll}
-                                selectedValue={filters.roll}
-                                onChange={handleFilterChange}
-                            />
+                                    <div className="px-5 pb-5 pt-4 space-y-6">
+                                        <FilterObject
+                                            title="Roll Type"
+                                            name="roll"
+                                            fields={filterFields.roll}
+                                            selectedValue={filters.roll}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Material"
-                                name="material"
-                                fields={filterFields.material}
-                                selectedValue={filters.material}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Material"
+                                            name="material"
+                                            fields={filterFields.material}
+                                            selectedValue={filters.material}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Material width"
-                                name="materialWidth"
-                                fields={filterFields.materialWidth}
-                                selectedValue={filters.materialWidth}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Color"
+                                            name="materialColor"
+                                            fields={filterFields.materialColor}
+                                            selectedValue={filters.materialColor}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Material thickness"
-                                name="materialThickness"
-                                fields={filterFields.materialThickness}
-                                selectedValue={filters.materialThickness}
-                                onChange={handleFilterChange}
-                            />
+                                        <div className="pt-4 mt-4 border-t border-gray-100">
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase mb-3">Dimensions</h4>
+                                            <div className="space-y-4">
+                                                <FilterObject
+                                                    title="Width"
+                                                    name="materialWidth"
+                                                    fields={filterFields.materialWidth}
+                                                    selectedValue={filters.materialWidth}
+                                                    onChange={handleFilterChange}
+                                                />
+                                                <FilterObject
+                                                    title="Thickness"
+                                                    name="materialThickness"
+                                                    fields={filterFields.materialThickness}
+                                                    selectedValue={filters.materialThickness}
+                                                    onChange={handleFilterChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <FilterObject
-                                title="Material color"
-                                name="materialColor"
-                                fields={filterFields.materialColor}
-                                selectedValue={filters.materialColor}
-                                onChange={handleFilterChange}
-                            />
+                                <div className="md:col-span-8 lg:col-span-9 overflow-y-auto h-full custom-scrollbar bg-gray-50/50 relative">
+                        
+                                    <div className="sticky top-0 bg-gray-50 z-10 px-5 py-3 border-b border-gray-200">
+                                        <h3 className="text-sm font-bold text-gray-900">
+                                            Additional Details
+                                        </h3>
+                                    </div>
 
-                            <FilterObject
-                                title="Other properties"
-                                name="otherProperties"
-                                fields={filterFields.otherProperties}
-                                selectedValue={filters.otherProperties}
-                                onChange={handleFilterChange}
-                            />
+                                    <div className="px-5 pb-5 pt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-6">
+                                        <FilterObject
+                                            title="Box Type"
+                                            name="boxType"
+                                            fields={filterFields.boxType}
+                                            selectedValue={filters.boxType}
+                                            onChange={handleFilterChange}
+                                        />
+                                        <FilterObject
+                                            title="Box Color"
+                                            name="boxColor"
+                                            fields={filterFields.boxColor}
+                                            selectedValue={filters.boxColor}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Skillet format"
-                                name="skilletFormat"
-                                fields={filterFields.skilletFormat}
-                                selectedValue={filters.skilletFormat}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Other properties"
+                                            name="otherProperties"
+                                            fields={filterFields.otherProperties}
+                                            selectedValue={filters.otherProperties}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Skillet knife"
-                                name="skilletKnife"
-                                fields={filterFields.skilletKnife}
-                                selectedValue={filters.skilletKnife}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Skillet knife"
+                                            name="skilletKnife"
+                                            fields={filterFields.skilletKnife}
+                                            selectedValue={filters.skilletKnife}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Skillet density"
-                                name="skilletDensity"
-                                fields={filterFields.skilletDensity}
-                                selectedValue={filters.skilletDensity}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Skillet density"
+                                            name="skilletDensity"
+                                            fields={filterFields.skilletDensity}
+                                            selectedValue={filters.skilletDensity}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Box type"
-                                name="boxType"
-                                fields={filterFields.boxType}
-                                selectedValue={filters.boxType}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Box type"
+                                            name="boxType"
+                                            fields={filterFields.boxType}
+                                            selectedValue={filters.boxType}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Box color"
-                                name="boxColor"
-                                fields={filterFields.boxColor}
-                                selectedValue={filters.boxColor}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Box color"
+                                            name="boxColor"
+                                            fields={filterFields.boxColor}
+                                            selectedValue={filters.boxColor}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Box print"
-                                name="boxPrint"
-                                fields={filterFields.boxPrint}
-                                selectedValue={filters.boxPrint}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Box print"
+                                            name="boxPrint"
+                                            fields={filterFields.boxPrint}
+                                            selectedValue={filters.boxPrint}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Box Execution"
-                                name="boxExecution"
-                                fields={filterFields.boxExecution}
-                                selectedValue={filters.boxExecution}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Box Execution"
+                                            name="boxExecution"
+                                            fields={filterFields.boxExecution}
+                                            selectedValue={filters.boxExecution}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Antislide paper sheets"
-                                name="antislidePaperSheets"
-                                fields={filterFields.antislidePaperSheets}
-                                selectedValue={filters.antislidePaperSheets}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Antislide paper sheets"
+                                            name="antislidePaperSheets"
+                                            fields={filterFields.antislidePaperSheets}
+                                            selectedValue={filters.antislidePaperSheets}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Period"
-                                name="period"
-                                fields={filterFields.period}
-                                selectedValue={filters.period}
-                                onChange={handleFilterChange}
-                            />
+                                        <FilterObject
+                                            title="Period"
+                                            name="period"
+                                            fields={filterFields.period}
+                                            selectedValue={filters.period}
+                                            onChange={handleFilterChange}
+                                        />
 
-                            <FilterObject
-                                title="Delivery conditions"
-                                name="deliveryConditions"
-                                fields={filterFields.deliveryConditions}
-                                selectedValue={filters.deliveryConditions}
-                                onChange={handleFilterChange}
-                            />
-
+                                        <FilterObject
+                                            title="Delivery conditions"
+                                            name="deliveryConditions"
+                                            fields={filterFields.deliveryConditions}
+                                            selectedValue={filters.deliveryConditions}
+                                            onChange={handleFilterChange}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="px-6 py-4 border-t rounded-b-2xl bg-white sticky bottom-0 flex justify-between gap-4 z-10">
+                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl shrink-0 z-20 flex justify-between gap-4">
                             <button
                                 onClick={() => setFilters({})}
-                                className="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 font-medium transition cursor-pointer"
+                                className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100 hover:border-gray-300 font-medium transition shadow-sm cursor-pointer"
                             >
-                                Clear
+                                Clear All
                             </button>
                             <button
                                 onClick={() => setIsFilterOpen(false)}
-                                className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-md transition cursor-pointer"
+                                className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition cursor-pointer"
                             >
-                                Apply ({filteredCalculations.length})
+                                Show {filteredCalculations.length} Results
                             </button>
                         </div>
                     </div>

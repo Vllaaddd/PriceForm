@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Check } from "lucide-react";
 
 type Props = {
     title: string;
@@ -10,36 +11,62 @@ type Props = {
 };
 
 export const FilterObject: FC<Props> = ({ title, name, fields, selectedValue, onChange, className }) => {
-    return(
-        <div className={`border-t pt-5 ${className || ""}`}>
-            <p className="text-lg font-semibold text-gray-800 mb-3">{title}</p>
-            <div className="space-y-2 pl-1">
-                <label
-                    className="flex items-center gap-2 cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-lg transition"
-                >
+    const isAllSelected = !selectedValue || selectedValue === "All";
+
+    return (
+        <div className={`flex flex-col gap-2 ${className || ""}`}>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                {title}
+            </p>
+            
+            <div className="grid grid-cols-2 gap-2">
+                <label className="relative group cursor-pointer w-full">
                     <input
                         type="radio"
                         name={name}
-                        className="w-5 h-5 accent-blue-600"
+                        className="peer sr-only"
                         value=""
-                        checked={!selectedValue || selectedValue === "All"}
+                        checked={isAllSelected}
                         onChange={() => onChange(name, 'All')}
                     />
-                    <span className="text-gray-700 group-hover:text-gray-900">All</span>
+                    <span className={`
+                        flex items-center justify-center text-center gap-2 px-2 py-2 rounded-lg text-sm font-medium border w-full h-full transition-all duration-200
+                        ${isAllSelected 
+                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
+                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                        }
+                    `}>
+                        {isAllSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                        <span className="truncate">All</span>
+                    </span>
                 </label>
-                {fields?.map((v) => (
-                    <label key={v} className="flex items-center gap-2 cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-lg transition">
-                        <input
-                            type="radio"
-                            name={name}
-                            className="w-5 h-5 accent-blue-600"
-                            value={v}
-                            checked={selectedValue === v}
-                            onChange={(e) => onChange(name, String(e.target.value))} />
-                        <span className="text-gray-700 group-hover:text-gray-900">{v}</span>
-                    </label>
-                ))}
+
+                {fields?.map((v) => {
+                    const isSelected = selectedValue === v;
+                    return (
+                        <label key={v} className="relative group cursor-pointer w-full">
+                            <input
+                                type="radio"
+                                name={name}
+                                className="peer sr-only"
+                                value={v}
+                                checked={isSelected}
+                                onChange={(e) => onChange(name, String(e.target.value))}
+                            />
+                            <span className={`
+                                flex items-center justify-center text-center gap-2 px-2 py-2 rounded-lg text-sm font-medium border w-full h-full transition-all duration-200 select-none
+                                ${isSelected 
+                                    ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
+                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                                }
+                            `}>
+                                {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                                <span className="truncate">{v}</span>
+                            </span>
+                        </label>
+                    );
+                })}
             </div>
         </div>
-    )    
-}
+    );
+};
