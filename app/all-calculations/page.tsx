@@ -250,7 +250,7 @@ export default function Home(){
                                             <td className="px-5 py-4 bg-white text-center">
                                                 <div className="inline-flex flex-col items-center justify-center px-4 py-1.5 rounded-lg bg-gray-50 border border-gray-100 group-hover:border-blue-200 group-hover:bg-blue-50/30 transition-all">
                                                     <span className="text-lg font-bold text-gray-900 leading-none">
-                                                        {calculation.totalOrderInRolls}
+                                                        {calculation.totalOrderInRolls.toLocaleString()}
                                                     </span>
                                                     <span className="text-[10px] uppercase font-semibold text-gray-400">
                                                         Rolls
