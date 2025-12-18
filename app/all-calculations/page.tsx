@@ -233,9 +233,12 @@ export default function Home(){
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center gap-1.5 text-xs text-gray-500">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-400 transition-colors"></span>
-                                                        {calculation.material === "Baking paper"
-                                                            ? `${calculation?.materialWidth} × ${calculation.rollLength}`
-                                                            : `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness}`}
+                                                        {calculation.material !== "Baking paper"
+                                                            ? `${calculation.materialWidth} mm × ${calculation.materialLength} m  × ${calculation.materialThickness} my`
+                                                            : calculation.material === 'Baking paper' && calculation.typeOfProduct === 'Consumer sheets'
+                                                               ? `${calculation?.sheetWidth} mm × ${calculation.sheetLength} mm`
+                                                               : `${calculation?.materialWidth} mm × ${calculation.rollLength} m`
+                                                        }
                                                     </div>
                                                     <div className="flex items-center gap-1.5 text-xs text-gray-500">
                                                         <Box className="w-3 h-3" />
@@ -289,11 +292,13 @@ export default function Home(){
                                     <span className="font-medium">Color:</span> {calculation.materialColor}
                                 </p>
                                 <p className="text-sm text-gray-600 mb-2">
-                                    <span className="font-medium">Dimensions:</span> {calculation.material === "Baking paper" ? (
-                                        `${calculation?.materialWidth} × ${calculation.rollLength} mm`
-                                    ) : (
-                                        `${calculation.materialWidth} × ${calculation.materialLength} × ${calculation.materialThickness} mm`
-                                    )}
+                                    <span className="font-medium">Dimensions:</span> 
+                                    {calculation.material !== "Baking paper"
+                                        ? ` ${calculation.materialWidth} mm × ${calculation.materialLength} m  × ${calculation.materialThickness} my`
+                                        : calculation.material === 'Baking paper' && calculation.typeOfProduct === 'Consumer sheets'
+                                            ? ` ${calculation?.sheetWidth} mm × ${calculation.sheetLength} mm`
+                                            : ` ${calculation?.materialWidth} mm × ${calculation.rollLength} m`
+                                    }
                                 </p>
                                 <p className="text-sm text-gray-600 mb-2">
                                     <span className="font-medium">Creation date:</span> {new Date(calculation.createdAt).toLocaleDateString()}
