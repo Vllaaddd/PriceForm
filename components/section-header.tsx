@@ -1,11 +1,19 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 type Props = {
-    title: string
+    title: string;
+    icon?: ReactNode;
 }
 
-export const SectionHeader: FC<Props> = ({ title }) => (
-  <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3 pb-2 border-b-2 border-blue-500 inline-block">
-    {title}
-  </h3>
+export const SectionHeader: FC<Props> = ({ title, icon }) => (
+  <div className="flex items-center gap-3 mt-10 mb-4 pb-2 border-b border-gray-100">
+    {icon && (
+        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            {icon}
+        </div>
+    )}
+    <h3 className="text-lg font-bold text-gray-800 tracking-tight">
+        {title}
+    </h3>
+  </div>
 );
