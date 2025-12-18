@@ -9,4 +9,5 @@ export enum ApiRoutes{
     RECIPIENTS = 'email-recipients',
     UMKARTONS = 'umkartons',
     EMAILTEXT = 'email-text',
+    DECKELS = 'deckels',
 }

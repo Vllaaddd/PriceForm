@@ -7,6 +7,7 @@ import * as periods from './periods'
 import * as recipients from './recipients'
 import * as umkartons from './umkartons'
 import * as emailtext from './email-text'
+import * as deckels from './deckels'
 
 export const Api = {
     calculations,
@@ -18,4 +19,5 @@ export const Api = {
     recipients,
     umkartons,
     emailtext,
+    deckels,
 }

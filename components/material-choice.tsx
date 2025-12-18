@@ -279,9 +279,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const umkartonName = umkarton.article;
     let umkartonPrice = 0;
 
+    if(umkarton.deckel !== 'nein'){
+      const deckelPrice = await Api.deckels.find({ article: umkarton.deckel })
+      umkartonPrice = deckelPrice.price;
+    }
+
     if (umkarton && totalOrderInRolls) {
       const tierPrice = umkarton?.tierPrices?.find((tp) => totalOrderInRolls > tp.tier.minQty && totalOrderInRolls <= tp.tier.maxQty);
-      umkartonPrice = (tierPrice ? tierPrice.price : 0);
+      umkartonPrice = umkartonPrice + (tierPrice ? tierPrice.price : 0);
     }
 
     const totalPricePerRoll = Number(materialCost) + Number(WVPerRoll) + Number(skilletPrice) + Number(corePrice) + Number(umkartonPrice);
