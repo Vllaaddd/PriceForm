@@ -444,20 +444,6 @@ export default function Home(){
                                     </div>
 
                                     <div className="px-5 pb-5 pt-4 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-6">
-                                        <FilterObject
-                                            title="Box Type"
-                                            name="boxType"
-                                            fields={filterFields.boxType}
-                                            selectedValue={filters.boxType}
-                                            onChange={handleFilterChange}
-                                        />
-                                        <FilterObject
-                                            title="Box Color"
-                                            name="boxColor"
-                                            fields={filterFields.boxColor}
-                                            selectedValue={filters.boxColor}
-                                            onChange={handleFilterChange}
-                                        />
 
                                         <FilterObject
                                             title="Other properties"
@@ -554,7 +540,7 @@ export default function Home(){
                                 onClick={() => setIsFilterOpen(false)}
                                 className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition cursor-pointer"
                             >
-                                Show {filteredCalculations.length} Results
+                                Show {filteredCalculations.length} {filteredCalculations.length === 1 ? 'Result' : 'Results'}
                             </button>
                         </div>
                     </div>
