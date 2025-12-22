@@ -272,8 +272,8 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const umkarton = await Api.umkartons.find({
       fsDimension: skillet.height,
       displayCarton: form.boxType === 'Display' ? 'ja' : 'Nein',
-      width: core.length,
-      bedoManu: roll === 'Consumer' ? 'Ja' : 'Nein'
+      bedoManu: roll === 'Consumer' ? 'Ja' : 'Nein',
+      width: skillet.width,
     })
 
     const umkartonName = umkarton.article;
@@ -769,13 +769,6 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         <div className="flex justify-center gap-5">
           <button type="submit" className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
             {isLoading ? 'Processing...' : 'Create calculation'}
-          </button>
-          <button 
-            type="button" 
-            className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
-            onClick={handleSubmitAndEmail}
-          >
-            {isLoading ? 'Processing...' : 'Create calculation and send to email'}
           </button>
         </div>
       </form>
