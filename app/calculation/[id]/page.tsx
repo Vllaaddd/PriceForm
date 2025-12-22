@@ -120,8 +120,8 @@ export default function CalulcationPage(){
 
                                 {(calculation.typeOfProduct === 'Consumer sheets' && calculation.material === 'Baking paper') ? (
                                     <>
-                                        <Info label="Sheet Width" unit="m" value={calculation.sheetWidth} />
-                                        <Info label="Sheet Length" unit="m" value={calculation.sheetLength} />
+                                        <Info label="Sheet Width" unit="mm" value={calculation.sheetWidth} />
+                                        <Info label="Sheet Length" unit="mm" value={calculation.sheetLength} />
                                         <Info label="Sheet Quantity" unit="pcs" value={calculation.sheetQuantity} />
                                     </>
                                 ) : calculation.typeOfProduct === 'Consumer roll' ? (
