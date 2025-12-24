@@ -137,7 +137,7 @@ model Umkarton{
     article String
     fsDimension Int
     displayCarton String
-    color String?
+    color Int?
     deckel String
     fsQty Int
     height Int
