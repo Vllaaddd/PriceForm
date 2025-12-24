@@ -1,7 +1,7 @@
 'use client';
 
 import HomeClient from "@/components/home-client";
-import { Suspense } from "react";
+import { Suspense } from 'react'
 
 export default function Page() {
 
@@ -82,7 +82,7 @@ export default function Page() {
 
   const skillet = {
     format: ['39', '45', '50', '52', '45', '60', '90', 'Without skillet/lose', '90/Minibox'],
-    knife: ['No knife', 'Straight plastic knife', 'V-type plastic knife', 'Slider', 'Clip-on saw'],
+    knife: ['With knife', 'Without knife'],
     density: [275, 350, 375, 400],
   };
 

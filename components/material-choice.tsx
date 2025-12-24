@@ -625,11 +625,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             onChange={(e) => handleChange("skilletKnife", e.target.value)}
           >
             <option value="">-- choose skillet knife --</option>
-            {(
-              (selectedRoll?.name === "BP" || selectedRoll?.name === "Consumer")
-                ? [skillet.knife[0], ...skillet.knife.slice(1, 3)]
-                : [skillet.knife[0], ...skillet.knife.slice(-2)]
-            ).map((k, i) => (
+            {skillet.knife.map((k, i) => (
               <option key={i} value={k}>
                 {k}
               </option>
