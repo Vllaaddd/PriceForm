@@ -289,8 +289,8 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
     const umkarton = await Api.umkartons.find({
       fsDimension: skillet.height,
-      displayCarton: form.boxType === 'Display' ? 'ja' : 'Nein',
-      bedoManu: roll === 'Consumer' ? 'Ja' : 'Nein',
+      displayCarton: form.boxType === 'Display' ? 'ja' : 'nein',
+      bedoManu: roll === 'Consumer' ? 'ja' : 'nein',
       width: skillet.width,
     })
 
