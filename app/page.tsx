@@ -21,7 +21,7 @@ export default function Page() {
           name: 'PE',
           width: [290, 295, 300],
           thickness: [8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13.5, 14, 14.5],
-          color: ['Transparent'],
+          color: ['Transparent', 'Not relevant'],
           otherProperties: ['SuperStretch', 'Easy Tear'],
           id: 2,
         },
