@@ -7,12 +7,14 @@ export const find = async (filters: {
     displayCarton: string;
     width: number;
     bedoManu: string;
+    color: string;
 }): Promise<UmkartonWithPrices> => {
     const params = new URLSearchParams();
     params.append("fsDimension", String(filters.fsDimension));
     params.append("displayCarton", filters.displayCarton);
     params.append("width", String(filters.width));
     params.append("bedoManu", String(filters.bedoManu));
+    params.append("color", String(filters.color));
 
     const { data } = await axiosInstance.get<UmkartonWithPrices>(`${ApiRoutes.UMKARTONS}/find?${params.toString()}`);
     return data;

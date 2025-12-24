@@ -8,12 +8,20 @@ export async function GET(req: NextRequest) {
         const displayCarton = searchParams.get("displayCarton");
         const width = Number(searchParams.get("width"));
         const bedoManu = searchParams.get("bedoManu");
+        const color = searchParams.get("color");
 
         const filters: any = {};
         if (fsDimension) filters.fsDimension = Number(fsDimension);
         if (displayCarton) filters.displayCarton = displayCarton;
-        if (width) filters.width = { gte: Number(width + 3)};
         if (bedoManu) filters.bedoManu = bedoManu;
+        if (color) filters.color = color === 'Brown' ? 0 : { gte: 1 };
+        if (width) {
+            filters.OR = [
+                { width: { gte: width } },
+                { height: { gte: width } },
+                { depth: { gte: width } }
+            ];
+        }
 
         const bestUmkarton = await prisma.umkarton.findFirst({
             where: filters,

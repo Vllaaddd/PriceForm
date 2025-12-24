@@ -291,6 +291,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       fsDimension: skillet.height,
       displayCarton: form.boxType === 'Display' ? 'ja' : 'nein',
       bedoManu: roll === 'Consumer' ? 'ja' : 'nein',
+      color: form.boxColor || '',
       width: skillet.width,
     })
 
