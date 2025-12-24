@@ -530,7 +530,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
               </SelectField>
 
               {/* Довжина */}
-              <InputField label="Length (m)" type="number" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
+              <InputField label="Length (m)" type="string" value={form.materialLength || ""} onChange={(e) => handleChange("materialLength", Number(e.target.value))} />
             </>
           )}
 
@@ -588,7 +588,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
               {/* Sheet quantity */}
               <InputField
                 label="Sheet quantity (max 30)"
-                type="number"
+                type="string"
                 max={30}
                 value={form.sheetQuantity || ""}
                 onChange={(e) => handleChange("sheetQuantity", Number(e.target.value))}
@@ -720,7 +720,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
           </SelectField>
 
           {/* Rolls per carton */}
-          <InputField label="Rolls per carton" type="number" value={form.rollsPerCarton || ""} onChange={(e) => handleChange("rollsPerCarton", Number(e.target.value))} />
+          <InputField label="Rolls per carton" type="string" value={form.rollsPerCarton || ""} onChange={(e) => handleChange("rollsPerCarton", Number(e.target.value))} />
 
           {/* Antislide paper sheets */}
           <SelectField label="Antislide paper sheets" value={form.antislidePaperSheets || ""} onChange={(e) => handleChange("antislidePaperSheets", e.target.value)}>
@@ -730,10 +730,10 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
           </SelectField>
 
           {/* Carton per pallet */}
-          <InputField label="Carton per pallet" type="number" value={form.cartonPerPallet || ""} onChange={(e) => handleChange("cartonPerPallet", Number(e.target.value))} />
+          <InputField label="Carton per pallet" type="string" value={form.cartonPerPallet || ""} onChange={(e) => handleChange("cartonPerPallet", Number(e.target.value))} />
 
           {/* Total order in rolls */}
-          <InputField label="Total order in rolls" type="number" value={form.totalOrderInRolls || ""} onChange={(e) => handleChange("totalOrderInRolls", Number(e.target.value))} />
+          <InputField label="Total order in rolls" type="string" value={form.totalOrderInRolls || ""} onChange={(e) => handleChange("totalOrderInRolls", Number(e.target.value))} />
 
           {/* Total order in pallets */}
           {form.totalOrderInPallets !== undefined && (
