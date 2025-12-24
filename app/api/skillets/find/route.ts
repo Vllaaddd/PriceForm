@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
         const whereClause: any = {
             width: { gte: width },
-            height: { gte: height + 3 },
+            height: { gte: height },
         };
 
         if (knife) whereClause.knife = knife;

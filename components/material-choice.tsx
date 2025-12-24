@@ -272,7 +272,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     }
 
     const skillet = await Api.skillets.find({
-      width: roll !== 'BP' ? core.width : materialWidth || 0,
+      width: roll !== 'BP' ? core.length : materialWidth || 0,
       height,
       knife: skilletKnife === 'With knife' ? 'ja' : 'nein',
       density: Number(skilletDensity)
