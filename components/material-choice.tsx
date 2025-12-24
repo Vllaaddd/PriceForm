@@ -745,7 +745,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
 
           {/* Період */}
           <SelectField label="Period" value={form.period || ""} onChange={(e) => handleChange("period", e.target.value)}>
-            <option value="">-- choose delivery conditions --</option>
+            <option value="">-- choose period --</option>
             {periods?.map((period, i) => (
               <option key={i} value={period.period}>
                 {period.period}

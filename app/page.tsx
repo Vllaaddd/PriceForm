@@ -88,7 +88,7 @@ export default function Page() {
 
   const box = {
     type: ['With cover', 'Without cover', 'Display', 'Export carton box'],
-    color: ['Brown', 'White'],
+    color: ['Brown', 'Printed in colors'],
     print: ['Printed', 'Not printed', 'Only barcode printed 2 sides', 'Only barcode printed 4 sides', 'Printed and varnished'],
     execution: ['With perforation', 'Without perforation'],
   };
