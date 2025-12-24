@@ -246,17 +246,35 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       corePrice = 0
     }
 
-    let thickness = 0;
+    let height = 0;
 
-    if(materialThickness && materialLength){
+    if(materialThickness && materialLength && roll !== 'BP'){
       const coreOutsideDiameter = core.width + core.thickness * 2
-      thickness = Math.sqrt(((materialLength * 4 * materialThickness) / Math.PI) + (coreOutsideDiameter ** 2)) * 1.02;
+      height = Math.sqrt(((materialLength * 4 * materialThickness) / Math.PI) + (coreOutsideDiameter ** 2)) * 1.02;
+    }else if(rollLength && sheetQuantity && roll === 'BP'){
+      if(typeOfProduct === 'Consumer sheets'){
+        if(sheetQuantity <= 15){
+          height = 39
+        }else if(sheetQuantity > 15 && sheetQuantity <= 20){
+          height = 45
+        }else{
+          height = 50
+        }
+      }else if(typeOfProduct !== 'Consumer sheets'){
+        if(Number(rollLength) <= 20){
+          height = 39
+        }else if(Number(rollLength) > 20 && Number(rollLength) <=40){
+          height = 45
+        }else{
+          height = 50
+        }
+      }
     }
 
     const skillet = await Api.skillets.find({
-      width: materialWidth || 0,
-      height: thickness,
-      knife: skilletKnife || '',
+      width: roll !== 'BP' ? core.width : materialWidth || 0,
+      height,
+      knife: skilletKnife === 'With knife' ? 'ja' : 'nein',
       density: Number(skilletDensity)
     })
 
