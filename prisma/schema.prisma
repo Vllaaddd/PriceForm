@@ -17,7 +17,14 @@ model Calculation{
     materialWidth Float
     materialThickness Float?
     materialLength Float?
+    density Float?
+    typeOfProduct String?
+    rollLength String?
+    sheetWidth String?
+    sheetLength String?
+    sheetQuantity Float?
     materialColor String
+    lochstanzlinge String?
     otherProperties String
     skilletFormat String?
     skilletKnife String?
@@ -26,7 +33,6 @@ model Calculation{
     boxColor String
     boxPrint String
     boxExecution String
-    lochstanzlinge String?
     rollsPerCarton Float
     antislidePaperSheets String
     cartonPerPallet Float
@@ -37,12 +43,9 @@ model Calculation{
     deliveryAddress String
     referenceArticle String?
     remarks String?
-    density Float?
-    typeOfProduct String?
-    rollLength String?
-    sheetWidth String?
-    sheetLength String?
-    sheetQuantity Float?
+    margin Float?
+    materialWeight Float?
+    foliePricePerKg Float?
     materialCost Float
     WVPerRoll Float
     core String?
@@ -53,9 +56,6 @@ model Calculation{
     umkartonPrice Float?
     totalPricePerRoll Float?
     totalPrice Float?
-    margin Float?
-    materialWeight Float?
-    foliePricePerKg Float?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -601,7 +601,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             ))}
           </SelectField>
 
-          {selectedRoll?.name === "Catering" ?
+          {selectedRoll?.name === "Catering" && (
             <>
               {/* Lochstanzlinge */}
                 <SelectField label="Lochstanzlinge" value={form.lochstanzlinge || ""} onChange={(e) => handleChange("lochstanzlinge", e.target.value)}>
@@ -613,19 +613,17 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
                   ))}
                 </SelectField>
             </>
-          : (
-            <>
-              {/* Skillet density */}
-              <SelectField label="Skillet density" value={form.skilletDensity || ""} onChange={(e) => handleChange("skilletDensity", Number(e.target.value))}>
-                <option value="">-- choose skillet density --</option>
-                {skillet.density.map((d, i) => (
-                  <option key={i} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </SelectField>
-            </>
           )}
+
+          {/* Skillet density */}
+          <SelectField label="Skillet density" value={form.skilletDensity || ""} onChange={(e) => handleChange("skilletDensity", Number(e.target.value))}>
+            <option value="">-- choose skillet density --</option>
+            {skillet.density.map((d, i) => (
+              <option key={i} value={d}>
+                {d}
+              </option>
+            ))}
+          </SelectField>
 
           {/* Box */}
           <SelectField label="Box type" value={form.boxType || ""} onChange={(e) => handleChange("boxType", e.target.value)}>
