@@ -30,11 +30,13 @@ export const find = async (filters: {
     material: string;
     lineType: string;
     length: number;
+    width: number;
 }): Promise<Line> => {
     const params = new URLSearchParams();
     params.append("material", filters.material);
     params.append("lineType", filters.lineType);
     params.append("length", String(filters.length));
+    params.append("width", String(filters.width));
 
     const { data } = await axiosInstance.get<Line>(`${ApiRoutes.LINES}/find?${params.toString()}`);
     return data;

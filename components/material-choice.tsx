@@ -138,24 +138,6 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
-  const fetchLine = async (material: string, materialLength: number, lineType: string) => {
-    const line = await Api.lines.find({
-      material: material,
-      lineType: lineType,
-      length: materialLength || 0
-    });
-
-
-    const { id } = line
-
-    const processingTime = Number(materialLength) / line.avSpeed;
-    const newValuePerRoll = processingTime * line.costPerMin;
-    await Api.lines.update(id, { rollLength: String(materialLength), processingTime, valuePerRoll: newValuePerRoll } )
-    
-    const updatedLine = await Api.lines.getOne(String(id))
-    return Number(updatedLine.valuePerRoll)
-  }
-
   const createForm = async (form: CalculationForm) => {
     let materialCost = 0
     let WVPerRoll = 0
@@ -192,45 +174,14 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
       }
     }
 
-    if(roll === 'Consumer' && materialWidth && materialWidth <= 350){
-      if (material === 'PE' || material === 'PVC') {
-        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Main lines');
-      } else {
-        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Main lines');
-      }
-    }else if(roll === 'Consumer' && materialWidth && materialWidth > 350){
-      if (material === 'PE' || material === 'PVC') {
-        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Speed 6,4');
-      } else {
-        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Speed 6,4');
-      }
-    }else if(roll === 'Catering'){
-      if (material === 'PE' || material === 'PVC') {
-        WVPerRoll = await fetchLine('Frischhaltefolie', materialLength || 0, 'Speed 4,5 and 4,6');
-      } else {
-        WVPerRoll = await fetchLine('Alu', materialLength || 0, 'Speed 4,5 and 4,6');
-      }
-    }else if(roll === 'BP' && typeOfProduct !== 'Consumer sheets' && rollLength && Number(rollLength) <=52){
-      WVPerRoll = await fetchLine('BP', Number(rollLength) || 0, 'BP lines')
-    }else if(roll === 'BP' && typeOfProduct === 'Consumer sheets' && sheetLength && sheetWidth && sheetQuantity){
+    const line = await Api.lines.find({
+      material: material || '',
+      lineType: roll || '',
+      length: materialLength || 0,
+      width: materialWidth || 0,
+    });
 
-      let length = 0;
-
-      if(sheetLength > sheetWidth){
-        length = Number(sheetLength) * sheetQuantity
-      }else{
-        length = Number(sheetWidth) * sheetQuantity
-      }
-
-      if(length <= 52000){
-        WVPerRoll = await fetchLine('BP', length/1000, 'BP lines')
-      }else{
-        WVPerRoll = 0
-      }
-
-    }else if(roll === 'BP' && rollLength && Number(rollLength) > 52){
-      WVPerRoll = 0
-    }
+    WVPerRoll = line.price;
 
     const core = await Api.cores.find({ length: materialWidth || 0, type: roll || '' })
     

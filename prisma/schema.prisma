@@ -64,16 +64,12 @@ model Calculation{
 model Line{
     id Int @id @default(autoincrement())
 
-    materialType String
-    length Float
-    totalDuration Int
-    totalMeters Float
-    avSpeed Int
-    rollLength String
-    processingTime Float
-    costPerMin Float
-    valuePerRoll Float
+    material String
     lineType String
+    maxLength Float
+    minWidth Float?
+    maxWidth Float?
+    price Float
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
