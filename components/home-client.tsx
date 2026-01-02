@@ -23,7 +23,6 @@ type Material = {
 };
 
 type Skillet = {
-  format: string[];
   knife: string[];
   density: number[];
 };

@@ -18,8 +18,7 @@ export async function POST(req: NextRequest){
     return NextResponse.json(calculation)
 }
 
-export async function DELETE(req: NextRequest){
-    const data = await req.json()
+export async function DELETE(){
 
     const calculation = await prisma.calculation.deleteMany()
 

@@ -26,7 +26,6 @@ model Calculation{
     materialColor String
     lochstanzlinge String?
     otherProperties String
-    skilletFormat String?
     skilletKnife String?
     skilletDensity Float?
     boxType String

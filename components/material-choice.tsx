@@ -20,7 +20,6 @@ type CalculationForm = {
   materialLength?: number | null
   materialColor?: string | null
   otherProperties?: string | null
-  skilletFormat?: string | null
   skilletKnife?: string | null
   skilletDensity?: number | null
   boxType?: string | null
@@ -63,7 +62,6 @@ type Material = {
 };
 
 interface Skillet {
-  format: string[]
   knife: string[]
   density: number[]
 }
