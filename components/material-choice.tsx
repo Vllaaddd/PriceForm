@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, FormEvent, useEffect, useState } from "react"
+import { FC, FormEvent, useEffect, useMemo, useState } from "react"
 import { SelectField } from "./select-field"
 import { InputField } from "./input-field"
 import { Api } from "@/services/api-client"
@@ -9,7 +9,6 @@ import { sendEmail } from "@/services/emails"
 import { ToastContainer, toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import { EmailText, Period } from "@prisma/client";
-import { motion } from "framer-motion"; // Опціонально, для плавних появ секцій
 import SectionTitle from "./section-title";
 
 type CalculationForm = {
@@ -331,12 +330,12 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         }
     }, [initialCalculation])
 
-    useEffect(() => {
+    const totalOrderInPallets = useMemo(() => {
         if (form.totalOrderInRolls && form.cartonPerPallet && form.rollsPerCarton) {
-            const result = form.totalOrderInRolls / form.cartonPerPallet / form.rollsPerCarton
-            setForm(prev => ({ ...prev, totalOrderInPallets: result }))
+            return form.totalOrderInRolls / form.cartonPerPallet / form.rollsPerCarton;
         }
-    }, [form.totalOrderInRolls, form.cartonPerPallet, form.rollsPerCarton])
+        return 0;
+    }, [form.totalOrderInRolls, form.cartonPerPallet, form.rollsPerCarton]);
 
     useEffect(() => {
         if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
@@ -368,7 +367,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
                         type="string"
                         value={form.title || ""}
                         onChange={(e) => handleChange("title", e.target.value)}
-                        placeholder="Project name or reference"
+                        placeholder="Title"
                     />
 
                     <InputField
@@ -673,11 +672,11 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
                         onChange={(e) => handleChange("totalOrderInRolls", Number(e.target.value))}
                     />
 
-                    {form.totalOrderInPallets !== undefined && !isNaN(form.totalOrderInPallets || 0) && (
+                    {totalOrderInPallets !== undefined && !isNaN(totalOrderInPallets || 0) && (
                         <div className="col-span-full bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
                             <span className="text-blue-900 font-medium">Total Order in Pallets:</span>
                             <span className="text-2xl font-bold text-blue-600">
-                                {form.totalOrderInPallets?.toFixed(2)}
+                                {totalOrderInPallets?.toFixed(2)}
                             </span>
                         </div>
                     )}
