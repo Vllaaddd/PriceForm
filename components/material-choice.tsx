@@ -97,32 +97,49 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
     const [isLoading, setIsLoading] = useState(false)
     const [emailText, setEmailText] = useState<EmailText>()
 
+    const selectedRoll = rolls.find(r => r.name === form.roll)
+    const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)
+
     useEffect(() => {
-        const fetchRecipients = async () => {
+        if (initialCalculation) {
+            setForm(initialCalculation)
+        }
+    }, [initialCalculation])
+
+    useEffect(() => {
+        const fetchData = async () => {
             try {
                 const recipients = await Api.recipients.getAll()
                 setEmails(recipients.map(r => r.email))
 
                 const text = await Api.emailtext.getText()
                 setEmailText(text)
+
+                const periods = await Api.periods.getAll()
+                setPeriods(periods)
             } catch (error) {
                 console.error(error)
             }
         }
-        fetchRecipients()
-    }, [])
 
-    const selectedRoll = rolls.find(r => r.name === form.roll)
-    const selectedMaterial = selectedRoll?.materials.find(m => m.name === form.material)
+        fetchData()
+    }, [])
 
     useEffect(() => {
-        const fetchPeriods = async () => {
-            const periods = await Api.periods.getAll()
-            setPeriods(periods)
+        if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
+            setForm(prev => ({ ...prev, deliveryAddress: "Singen" }))
+        } else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
+            setForm(prev => ({ ...prev, deliveryAddress: "" }))
         }
-        fetchPeriods()
-    }, [])
+    }, [form.deliveryConditions])
 
+    const totalOrderInPallets = useMemo(() => {
+        if (form.totalOrderInRolls && form.cartonPerPallet && form.rollsPerCarton) {
+            return form.totalOrderInRolls / form.cartonPerPallet / form.rollsPerCarton;
+        }
+        return 0;
+    }, [form.totalOrderInRolls, form.cartonPerPallet, form.rollsPerCarton]);
+    
     const handleChange = (field: keyof CalculationForm, value: any) => {
         setForm(prev => ({ ...prev, [field]: value }))
     }
@@ -214,7 +231,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         const skillet = await Api.skillets.find({
             width: roll !== 'BP' ? core.length : materialWidth || 0,
             height,
-            knife: skilletKnife === 'With knife' ? 'ja' : 'nein',
+            knife: skilletKnife || '',
             density: Number(skilletDensity)
         })
 
@@ -323,27 +340,6 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
         toast.success('Calculation created!')
 
     }
-
-    useEffect(() => {
-        if (initialCalculation) {
-            setForm(initialCalculation)
-        }
-    }, [initialCalculation])
-
-    const totalOrderInPallets = useMemo(() => {
-        if (form.totalOrderInRolls && form.cartonPerPallet && form.rollsPerCarton) {
-            return form.totalOrderInRolls / form.cartonPerPallet / form.rollsPerCarton;
-        }
-        return 0;
-    }, [form.totalOrderInRolls, form.cartonPerPallet, form.rollsPerCarton]);
-
-    useEffect(() => {
-        if (form.deliveryConditions === "EXW" || form.deliveryConditions === "FCA") {
-            setForm(prev => ({ ...prev, deliveryAddress: "Singen" }))
-        } else if (form.deliveryConditions === "DDP" || form.deliveryConditions === "DAP") {
-            setForm(prev => ({ ...prev, deliveryAddress: "" }))
-        }
-    }, [form.deliveryConditions])
 
     return (
         <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
