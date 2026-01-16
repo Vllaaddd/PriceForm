@@ -1,8 +1,11 @@
-import { Api } from "@/services/api-client"
 import { NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
 export async function POST(req: NextRequest) {
+
+  const nf = (value?: number, digits = 2) =>
+    typeof value === "number" ? value.toFixed(digits) : "-"
+
   try {
     const { email, calculation, type, text } = await req.json()
 
@@ -53,18 +56,18 @@ export async function POST(req: NextRequest) {
         { label: "Delivery address", value: calculation.deliveryAddress },
         { label: "Reference article", value: calculation.referenceArticle },
         { label: "Remarks", value: calculation.remarks },
-        { label: "Material cost per roll", value: calculation.materialCost.toFixed(2) },
-        { label: "W&V per roll", value: calculation.WVPerRoll.toFixed(3) },
+        { label: "Material cost per roll", value: nf(calculation.materialCost, 2) },
+        { label: "W&V per roll", value: nf(calculation.WVPerRoll, 3) },
         { label: "Skillet", value: calculation.skillet },
-        { label: "Skillet price per roll", value: calculation.skilletPrice.toFixed(3) },
+        { label: "Skillet price per roll", value: nf(calculation.skilletPrice, 3) },
         ...(calculation.material !== 'Baking paper' ? [
           { label: "Core", value: `${calculation.core} mm` },
-          { label: "Core price per roll", value: `${calculation.corePrice.toFixed(3)} mm` },
+          { label: "Core price per roll", value: `${nf(calculation.corePrice, 3)} mm` },
         ] : []),
         { label: "Umkarton", value: calculation.umkarton },
-        { label: "Umkarton price per roll", value: calculation.umkartonPrice.toFixed(3) },
-        { label: "Total price per roll", value: calculation.totalPricePerRoll.toFixed(3) },
-        { label: "Total price", value: calculation.totalPrice.toFixed(3) },
+        { label: "Umkarton price per roll", value: nf(calculation.umkartonPrice, 3) },
+        { label: "Total price per roll", value: nf(calculation.totalPricePerRoll, 3) },
+        { label: "Total price", value: nf(calculation.totalPrice, 3) },
     ]
 
     const rows = fields

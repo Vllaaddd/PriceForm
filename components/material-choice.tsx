@@ -279,7 +279,7 @@ export const MaterialChoice: FC<Props> = ({ rolls, skillet, box, delivery, initi
             margin = 3
         }
 
-        return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin, materialWeight, foliePricePerKg: Number(costPerKg), materialLength }
+        return { materialCost, WVPerRoll, skilletPrice, skillet: skilletName, corePrice, core: coreName, umkarton: umkartonName, umkartonPrice, totalPricePerRoll, totalPrice, margin, materialWeight, foliePricePerKg: Number(costPerKg), materialLength, totalOrderInPallets }
     }
 
     const handleSubmit = async (e: FormEvent) => {

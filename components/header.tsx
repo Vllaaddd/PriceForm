@@ -52,7 +52,7 @@ export const Header: FC = () => {
                     </Link>
 
                     <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 bg-white/50 backdrop-blur-md p-1.5 rounded-full border border-gray-100 shadow-sm">
-                        <NavItem href="/create-calculation" active={pathname === '/create-calculation'}>
+                        <NavItem href="/" active={pathname === '/'}>
                             Create calculation
                         </NavItem>
                         <NavItem href="/all-calculations" active={pathname === '/all-calculations'}>

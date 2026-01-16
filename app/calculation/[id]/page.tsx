@@ -189,7 +189,7 @@ export default function CalulcationPage(){
                             )}
 
                             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-12 pt-8 border-t border-gray-100">
-                                <Link href={`/create-calculation?from=${id}`} className="w-full sm:w-auto">
+                                <Link href={`/?from=${id}`} className="w-full sm:w-auto">
                                     <button className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white border-2 border-blue-600 text-blue-600 font-bold hover:bg-blue-50 transition shadow-sm group cursor-pointer">
                                         <Copy className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                         Duplicate & Edit
